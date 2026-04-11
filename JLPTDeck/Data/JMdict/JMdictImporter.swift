@@ -85,6 +85,7 @@ final class JMdictImporter {
                 headword: entry.headword,
                 reading: entry.reading,
                 gloss: entry.gloss,
+                gloss_ko: entry.gloss_ko,
                 jlptLevel: entry.jlptLevel.rawValue
             )
             modelContext.insert(card)

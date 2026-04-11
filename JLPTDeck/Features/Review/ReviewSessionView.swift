@@ -43,58 +43,31 @@ struct ReviewSessionView: View {
     private func content(vm: ReviewSessionViewModel) -> some View {
         if vm.isComplete {
             SessionCompleteView(completedCount: vm.completedCount)
-        } else if let card = vm.currentCard {
+        } else if let q = vm.currentQuestion {
             VStack(spacing: 16) {
                 Text("\(vm.index + 1) / \(vm.queue.count)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                FlashcardView(
-                    card: card,
-                    showBack: Binding(
-                        get: { vm.showBack },
-                        set: { vm.showBack = $0 }
-                    )
-                )
+                QuizCardView(
+                    question: q,
+                    selectedIndex: vm.selectedAnswerIndex,
+                    isRevealed: vm.isAnswerRevealed
+                ) { idx in
+                    vm.submitAnswer(idx)
+                    if vm.lastAnswerWasCorrect == true {
+                        HapticsManager.success()
+                    } else {
+                        HapticsManager.error()
+                    }
+                    Task {
+                        try? await Task.sleep(nanoseconds: 1_200_000_000)
+                        withAnimation { vm.advance() }
+                    }
+                }
                 .padding(.horizontal)
-
-                gradeButtons(vm: vm)
-                    .padding(.horizontal)
-                    .padding(.bottom)
+                .padding(.bottom)
             }
-        }
-    }
-
-    private func gradeButtons(vm: ReviewSessionViewModel) -> some View {
-        HStack(spacing: 8) {
-            gradeButton(title: "Again", color: .red, quality: .again, vm: vm)
-            gradeButton(title: "Hard", color: .orange, quality: .hard, vm: vm)
-            gradeButton(title: "Good", color: .green, quality: .good, vm: vm)
-            gradeButton(title: "Easy", color: .blue, quality: .easy, vm: vm)
-        }
-    }
-
-    private func gradeButton(
-        title: String,
-        color: Color,
-        quality: SRSQuality,
-        vm: ReviewSessionViewModel
-    ) -> some View {
-        Button {
-            HapticsManager.tap()
-            do {
-                try vm.grade(quality)
-            } catch {
-                loadError = String(describing: error)
-            }
-        } label: {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(color.opacity(0.15))
-                .foregroundStyle(color)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
 

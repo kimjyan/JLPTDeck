@@ -21,6 +21,11 @@ protocol LocalRepository {
     ) throws -> [(VocabCard, SRSState?)]
 
     func upsertSRS(cardID: UUID, update: SRSUpdate, now: Date) throws
+
+    /// Returns up to `count` other cards at the same level, distinct from `excluding`
+    /// AND distinct from each other by `gloss_ko` (so distractors don't share a meaning).
+    /// Useful for building 4-choice MCQ questions.
+    func distractorCards(level: JLPTLevel, excluding: UUID, count: Int) throws -> [VocabCard]
 }
 
 final class SwiftDataLocalRepository: LocalRepository {
@@ -108,5 +113,24 @@ final class SwiftDataLocalRepository: LocalRepository {
         } catch {
             throw RepositoryError.persistenceFailure(error)
         }
+    }
+
+    func distractorCards(level: JLPTLevel, excluding: UUID, count: Int) throws -> [VocabCard] {
+        guard count > 0 else { return [] }
+        let pool = try cards(for: level)              // existing method, fetches all at level
+        var seenGlossKo: Set<String> = []
+        var picks: [VocabCard] = []
+        let shuffled = pool.shuffled()
+        for card in shuffled {
+            if card.id == excluding { continue }
+            // Skip cards with empty gloss_ko (untranslated). Otherwise dedup by gloss_ko.
+            let key = card.gloss_ko
+            if key.isEmpty { continue }
+            if seenGlossKo.contains(key) { continue }
+            seenGlossKo.insert(key)
+            picks.append(card)
+            if picks.count == count { break }
+        }
+        return picks
     }
 }

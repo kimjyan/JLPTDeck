@@ -1,0 +1,10 @@
+[
+  { "headword": "食べる", "reading": "たべる",   "gloss": "to eat",              "jlptLevel": "n4" },
+  { "headword": "飲む",   "reading": "のむ",     "gloss": "to drink",            "jlptLevel": "n4" },
+  { "headword": "空港",   "reading": "くうこう", "gloss": "airport",             "jlptLevel": "n3" },
+  { "headword": "橋",     "reading": "はし",     "gloss": "bridge",              "jlptLevel": "n3" },
+  { "headword": "経済",   "reading": "けいざい", "gloss": "economy",             "jlptLevel": "n2" },
+  { "headword": "現象",   "reading": "げんしょう","gloss": "phenomenon",          "jlptLevel": "n2" },
+  { "headword": "斡旋",   "reading": "あっせん", "gloss": "mediation",           "jlptLevel": "n1" },
+  { "headword": "曖昧",   "reading": "あいまい", "gloss": "vague, ambiguous",    "jlptLevel": "n1" }
+]

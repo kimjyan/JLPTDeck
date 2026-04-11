@@ -6,6 +6,27 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0D33490FDAD3EC16608BB7D1 /* RepositoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5140689996A08431939571F /* RepositoryError.swift */; };
+		2E7992C5783732F4095EDFFB /* JMdictImporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFAC486002BFE035971F641 /* JMdictImporterTests.swift */; };
+		3185175C19D15F43E820C32B /* LocalRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A49142EBE92B4AE1F77830E /* LocalRepository.swift */; };
+		364A03C93D9E279F38E69932 /* SM2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8956FF5A4628C6E68941E81 /* SM2.swift */; };
+		3B17C1C98AA7FC9CFACA65FB /* SchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67FF2632D8E37887BF52CDC /* SchedulerTests.swift */; };
+		45E7F5E2395A9FA4A7F0CAE5 /* VocabCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE641C0D3BA209FB72BCAF91 /* VocabCard.swift */; };
+		486468A67483CF7CD4E07621 /* LocalRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F78AF106F1F094458FDA39 /* LocalRepositoryTests.swift */; };
+		4F8AB8FAF2CE4DBCD45E866B /* CardScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9358DB8E233AA64ECD286F70 /* CardScheduler.swift */; };
+		5CB7151ED967BE3236ED6DEA /* SRSUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0583774D090E7CCC055DC695 /* SRSUpdate.swift */; };
+		6E3731B5B1F342297B019A8D /* SRSSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16DD551C02FF59700EEDB8 /* SRSSnapshot.swift */; };
+		70CC7BE67737215216D6F948 /* jmdict_sample.json in Resources */ = {isa = PBXBuildFile; fileRef = 4B095E79884E7580F9C4A943 /* jmdict_sample.json */; };
+		B50191D8FB52E9CA57BD6711 /* JMdictImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED89E9A610A29F012AF45D8 /* JMdictImporter.swift */; };
+		D18BAC3DEAE6F579C45B51C5 /* JMdictEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992770CC5CE815B6BF058CD8 /* JMdictEntry.swift */; };
+		D9E9F518915B3D00F61A76D0 /* JLPTLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B977B7079808390171797E /* JLPTLevel.swift */; };
+		DC250F4DAD48FC4319943541 /* SRSStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D13AC049DA2E1DB481140B7 /* SRSStateTests.swift */; };
+		E84FB42EAF5F400E37795C6F /* SRSState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527EDE1044FFF5C62084B7C /* SRSState.swift */; };
+		F44B01AEAC12C87CA6086979 /* SM2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395DEA2A3946441D3CD0723A /* SM2Tests.swift */; };
+		F62E5259BAC4090A6B5B8DC1 /* SRSQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B28D80CBEFA6A5AF6050C5 /* SRSQuality.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		801A7FCD2F8A8B6B00292277 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,24 +45,48 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0583774D090E7CCC055DC695 /* SRSUpdate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSUpdate.swift; sourceTree = "<group>"; };
+		2AFAC486002BFE035971F641 /* JMdictImporterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JMdictImporterTests.swift; sourceTree = "<group>"; };
+		395DEA2A3946441D3CD0723A /* SM2Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SM2Tests.swift; sourceTree = "<group>"; };
+		4527EDE1044FFF5C62084B7C /* SRSState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSState.swift; sourceTree = "<group>"; };
+		4B095E79884E7580F9C4A943 /* jmdict_sample.json */ = {isa = PBXFileReference; includeInIndex = 1; path = jmdict_sample.json; sourceTree = "<group>"; };
+		64B28D80CBEFA6A5AF6050C5 /* SRSQuality.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSQuality.swift; sourceTree = "<group>"; };
+		6A49142EBE92B4AE1F77830E /* LocalRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalRepository.swift; sourceTree = "<group>"; };
+		7D13AC049DA2E1DB481140B7 /* SRSStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSStateTests.swift; sourceTree = "<group>"; };
 		801A7FBD2F8A8B6A00292277 /* JLPTDeck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JLPTDeck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		801A7FCC2F8A8B6B00292277 /* JLPTDeckTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JLPTDeckTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		801A7FD62F8A8B6B00292277 /* JLPTDeckUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JLPTDeckUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9358DB8E233AA64ECD286F70 /* CardScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScheduler.swift; sourceTree = "<group>"; };
+		992770CC5CE815B6BF058CD8 /* JMdictEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JMdictEntry.swift; sourceTree = "<group>"; };
+		AA16DD551C02FF59700EEDB8 /* SRSSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSSnapshot.swift; sourceTree = "<group>"; };
+		BED89E9A610A29F012AF45D8 /* JMdictImporter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JMdictImporter.swift; sourceTree = "<group>"; };
+		C67FF2632D8E37887BF52CDC /* SchedulerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SchedulerTests.swift; sourceTree = "<group>"; };
+		C7F78AF106F1F094458FDA39 /* LocalRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalRepositoryTests.swift; sourceTree = "<group>"; };
+		CE641C0D3BA209FB72BCAF91 /* VocabCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VocabCard.swift; sourceTree = "<group>"; };
+		D4B977B7079808390171797E /* JLPTLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JLPTLevel.swift; sourceTree = "<group>"; };
+		D8956FF5A4628C6E68941E81 /* SM2.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SM2.swift; sourceTree = "<group>"; };
+		F5140689996A08431939571F /* RepositoryError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RepositoryError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		801A7FBF2F8A8B6A00292277 /* JLPTDeck */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = JLPTDeck;
 			sourceTree = "<group>";
 		};
 		801A7FCF2F8A8B6B00292277 /* JLPTDeckTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = JLPTDeckTests;
 			sourceTree = "<group>";
 		};
 		801A7FD92F8A8B6B00292277 /* JLPTDeckUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = JLPTDeckUITests;
 			sourceTree = "<group>";
 		};
@@ -72,6 +117,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		11F479FDF6E4F87E0F19CEC5 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				2AFAC486002BFE035971F641 /* JMdictImporterTests.swift */,
+				C7F78AF106F1F094458FDA39 /* LocalRepositoryTests.swift */,
+				A7BAAADB2623AD272678F524 /* Fixtures */,
+			);
+			name = Data;
+			path = Data;
+			sourceTree = "<group>";
+		};
+		2EC0E98D68F37FFEB0979F69 /* SRS */ = {
+			isa = PBXGroup;
+			children = (
+				64B28D80CBEFA6A5AF6050C5 /* SRSQuality.swift */,
+				0583774D090E7CCC055DC695 /* SRSUpdate.swift */,
+				AA16DD551C02FF59700EEDB8 /* SRSSnapshot.swift */,
+				D8956FF5A4628C6E68941E81 /* SM2.swift */,
+				9358DB8E233AA64ECD286F70 /* CardScheduler.swift */,
+			);
+			name = SRS;
+			path = SRS;
+			sourceTree = "<group>";
+		};
+		3857C50A77F83204AFE89618 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				6BF1CC39C9235DE2A32F5AF0 /* Models */,
+				ECAC43C86B8BF0718D5E6F91 /* JMdict */,
+				C17EF93BEE6C6B519B5FF53C /* Repository */,
+			);
+			name = Data;
+			path = Data;
+			sourceTree = "<group>";
+		};
+		6BF1CC39C9235DE2A32F5AF0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4527EDE1044FFF5C62084B7C /* SRSState.swift */,
+				CE641C0D3BA209FB72BCAF91 /* VocabCard.swift */,
+			);
+			name = Models;
+			path = Models;
+			sourceTree = "<group>";
+		};
 		801A7FB42F8A8B6A00292277 = {
 			isa = PBXGroup;
 			children = (
@@ -79,6 +169,8 @@
 				801A7FCF2F8A8B6B00292277 /* JLPTDeckTests */,
 				801A7FD92F8A8B6B00292277 /* JLPTDeckUITests */,
 				801A7FBE2F8A8B6A00292277 /* Products */,
+				B023690E550BC652688728BA /* JLPTDeck */,
+				A8CACFEBD6FEF9CB5788468E /* JLPTDeckTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,6 +182,76 @@
 				801A7FD62F8A8B6B00292277 /* JLPTDeckUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		90BC2594BE1155E94BE4B0AB /* SRS */ = {
+			isa = PBXGroup;
+			children = (
+				395DEA2A3946441D3CD0723A /* SM2Tests.swift */,
+				C67FF2632D8E37887BF52CDC /* SchedulerTests.swift */,
+				7D13AC049DA2E1DB481140B7 /* SRSStateTests.swift */,
+			);
+			name = SRS;
+			path = SRS;
+			sourceTree = "<group>";
+		};
+		A7BAAADB2623AD272678F524 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				4B095E79884E7580F9C4A943 /* jmdict_sample.json */,
+			);
+			name = Fixtures;
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		A8CACFEBD6FEF9CB5788468E /* JLPTDeckTests */ = {
+			isa = PBXGroup;
+			children = (
+				90BC2594BE1155E94BE4B0AB /* SRS */,
+				11F479FDF6E4F87E0F19CEC5 /* Data */,
+			);
+			name = JLPTDeckTests;
+			path = JLPTDeckTests;
+			sourceTree = "<group>";
+		};
+		B023690E550BC652688728BA /* JLPTDeck */ = {
+			isa = PBXGroup;
+			children = (
+				F7939D9B64C3D782BAD06459 /* Domain */,
+				3857C50A77F83204AFE89618 /* Data */,
+			);
+			name = JLPTDeck;
+			path = JLPTDeck;
+			sourceTree = "<group>";
+		};
+		C17EF93BEE6C6B519B5FF53C /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				F5140689996A08431939571F /* RepositoryError.swift */,
+				6A49142EBE92B4AE1F77830E /* LocalRepository.swift */,
+			);
+			name = Repository;
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		ECAC43C86B8BF0718D5E6F91 /* JMdict */ = {
+			isa = PBXGroup;
+			children = (
+				D4B977B7079808390171797E /* JLPTLevel.swift */,
+				992770CC5CE815B6BF058CD8 /* JMdictEntry.swift */,
+				BED89E9A610A29F012AF45D8 /* JMdictImporter.swift */,
+			);
+			name = JMdict;
+			path = JMdict;
+			sourceTree = "<group>";
+		};
+		F7939D9B64C3D782BAD06459 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2EC0E98D68F37FFEB0979F69 /* SRS */,
+			);
+			name = Domain;
+			path = Domain;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -111,8 +273,6 @@
 				801A7FBF2F8A8B6A00292277 /* JLPTDeck */,
 			);
 			name = JLPTDeck;
-			packageProductDependencies = (
-			);
 			productName = JLPTDeck;
 			productReference = 801A7FBD2F8A8B6A00292277 /* JLPTDeck.app */;
 			productType = "com.apple.product-type.application";
@@ -134,8 +294,6 @@
 				801A7FCF2F8A8B6B00292277 /* JLPTDeckTests */,
 			);
 			name = JLPTDeckTests;
-			packageProductDependencies = (
-			);
 			productName = JLPTDeckTests;
 			productReference = 801A7FCC2F8A8B6B00292277 /* JLPTDeckTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -157,8 +315,6 @@
 				801A7FD92F8A8B6B00292277 /* JLPTDeckUITests */,
 			);
 			name = JLPTDeckUITests;
-			packageProductDependencies = (
-			);
 			productName = JLPTDeckUITests;
 			productReference = 801A7FD62F8A8B6B00292277 /* JLPTDeckUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -219,6 +375,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70CC7BE67737215216D6F948 /* jmdict_sample.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +393,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F62E5259BAC4090A6B5B8DC1 /* SRSQuality.swift in Sources */,
+				5CB7151ED967BE3236ED6DEA /* SRSUpdate.swift in Sources */,
+				6E3731B5B1F342297B019A8D /* SRSSnapshot.swift in Sources */,
+				364A03C93D9E279F38E69932 /* SM2.swift in Sources */,
+				4F8AB8FAF2CE4DBCD45E866B /* CardScheduler.swift in Sources */,
+				E84FB42EAF5F400E37795C6F /* SRSState.swift in Sources */,
+				45E7F5E2395A9FA4A7F0CAE5 /* VocabCard.swift in Sources */,
+				D9E9F518915B3D00F61A76D0 /* JLPTLevel.swift in Sources */,
+				D18BAC3DEAE6F579C45B51C5 /* JMdictEntry.swift in Sources */,
+				B50191D8FB52E9CA57BD6711 /* JMdictImporter.swift in Sources */,
+				0D33490FDAD3EC16608BB7D1 /* RepositoryError.swift in Sources */,
+				3185175C19D15F43E820C32B /* LocalRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +412,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44B01AEAC12C87CA6086979 /* SM2Tests.swift in Sources */,
+				3B17C1C98AA7FC9CFACA65FB /* SchedulerTests.swift in Sources */,
+				DC250F4DAD48FC4319943541 /* SRSStateTests.swift in Sources */,
+				2E7992C5783732F4095EDFFB /* JMdictImporterTests.swift in Sources */,
+				486468A67483CF7CD4E07621 /* LocalRepositoryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,18 +1,15 @@
-//
-//  JLPTDeckApp.swift
-//  JLPTDeck
-//
-//  Created by 김재한 on 4/11/26.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct JLPTDeckApp: App {
-    var sharedModelContainer: ModelContainer = {
+    @State private var settings = UserSettings()
+    @State private var router = AppRouter()
+
+    let sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            VocabCard.self,
+            SRSState.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +22,9 @@ struct JLPTDeckApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environment(settings)
+                .environment(router)
         }
         .modelContainer(sharedModelContainer)
     }

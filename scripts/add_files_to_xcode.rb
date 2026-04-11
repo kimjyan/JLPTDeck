@@ -24,7 +24,23 @@ APP_SOURCES = [
   'JLPTDeck/Data/JMdict/JMdictEntry.swift',
   'JLPTDeck/Data/JMdict/JMdictImporter.swift',
   'JLPTDeck/Data/Repository/RepositoryError.swift',
-  'JLPTDeck/Data/Repository/LocalRepository.swift'
+  'JLPTDeck/Data/Repository/LocalRepository.swift',
+  'JLPTDeck/App/UserSettings.swift',
+  'JLPTDeck/App/AppRouter.swift',
+  'JLPTDeck/App/RootView.swift',
+  'JLPTDeck/Features/Onboarding/OnboardingView.swift',
+  'JLPTDeck/Features/Onboarding/OnboardingViewModel.swift',
+  'JLPTDeck/Features/Onboarding/LevelPickerView.swift',
+  'JLPTDeck/Features/Onboarding/DailyLimitView.swift',
+  'JLPTDeck/Features/Home/HomeView.swift',
+  'JLPTDeck/Features/Review/ReviewSessionView.swift',
+  'JLPTDeck/Features/Review/ReviewSessionViewModel.swift',
+  'JLPTDeck/Features/Review/FlashcardView.swift',
+  'JLPTDeck/Features/Review/CardFrontView.swift',
+  'JLPTDeck/Features/Review/CardBackView.swift',
+  'JLPTDeck/Features/Review/SessionCompleteView.swift',
+  'JLPTDeck/Shared/Theme.swift',
+  'JLPTDeck/Shared/HapticsManager.swift'
 ]
 
 TEST_SOURCES = [

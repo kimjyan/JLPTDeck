@@ -49,7 +49,7 @@
 		2AFAC486002BFE035971F641 /* JMdictImporterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JMdictImporterTests.swift; sourceTree = "<group>"; };
 		395DEA2A3946441D3CD0723A /* SM2Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SM2Tests.swift; sourceTree = "<group>"; };
 		4527EDE1044FFF5C62084B7C /* SRSState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSState.swift; sourceTree = "<group>"; };
-		4B095E79884E7580F9C4A943 /* jmdict_sample.json */ = {isa = PBXFileReference; includeInIndex = 1; path = jmdict_sample.json; sourceTree = "<group>"; };
+		4B095E79884E7580F9C4A943 /* jmdict_sample.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = jmdict_sample.json; sourceTree = "<group>"; };
 		64B28D80CBEFA6A5AF6050C5 /* SRSQuality.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSQuality.swift; sourceTree = "<group>"; };
 		6A49142EBE92B4AE1F77830E /* LocalRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalRepository.swift; sourceTree = "<group>"; };
 		7D13AC049DA2E1DB481140B7 /* SRSStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SRSStateTests.swift; sourceTree = "<group>"; };
@@ -71,22 +71,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		801A7FBF2F8A8B6A00292277 /* JLPTDeck */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeck;
 			sourceTree = "<group>";
 		};
 		801A7FCF2F8A8B6B00292277 /* JLPTDeckTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeckTests;
 			sourceTree = "<group>";
 		};
 		801A7FD92F8A8B6B00292277 /* JLPTDeckUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeckUITests;
 			sourceTree = "<group>";
 		};
@@ -124,7 +118,6 @@
 				C7F78AF106F1F094458FDA39 /* LocalRepositoryTests.swift */,
 				A7BAAADB2623AD272678F524 /* Fixtures */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -137,7 +130,6 @@
 				D8956FF5A4628C6E68941E81 /* SM2.swift */,
 				9358DB8E233AA64ECD286F70 /* CardScheduler.swift */,
 			);
-			name = SRS;
 			path = SRS;
 			sourceTree = "<group>";
 		};
@@ -148,7 +140,6 @@
 				ECAC43C86B8BF0718D5E6F91 /* JMdict */,
 				C17EF93BEE6C6B519B5FF53C /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -158,7 +149,6 @@
 				4527EDE1044FFF5C62084B7C /* SRSState.swift */,
 				CE641C0D3BA209FB72BCAF91 /* VocabCard.swift */,
 			);
-			name = Models;
 			path = Models;
 			sourceTree = "<group>";
 		};
@@ -191,7 +181,6 @@
 				C67FF2632D8E37887BF52CDC /* SchedulerTests.swift */,
 				7D13AC049DA2E1DB481140B7 /* SRSStateTests.swift */,
 			);
-			name = SRS;
 			path = SRS;
 			sourceTree = "<group>";
 		};
@@ -200,7 +189,6 @@
 			children = (
 				4B095E79884E7580F9C4A943 /* jmdict_sample.json */,
 			);
-			name = Fixtures;
 			path = Fixtures;
 			sourceTree = "<group>";
 		};
@@ -210,7 +198,6 @@
 				90BC2594BE1155E94BE4B0AB /* SRS */,
 				11F479FDF6E4F87E0F19CEC5 /* Data */,
 			);
-			name = JLPTDeckTests;
 			path = JLPTDeckTests;
 			sourceTree = "<group>";
 		};
@@ -220,7 +207,6 @@
 				F7939D9B64C3D782BAD06459 /* Domain */,
 				3857C50A77F83204AFE89618 /* Data */,
 			);
-			name = JLPTDeck;
 			path = JLPTDeck;
 			sourceTree = "<group>";
 		};
@@ -230,7 +216,6 @@
 				F5140689996A08431939571F /* RepositoryError.swift */,
 				6A49142EBE92B4AE1F77830E /* LocalRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -241,7 +226,6 @@
 				992770CC5CE815B6BF058CD8 /* JMdictEntry.swift */,
 				BED89E9A610A29F012AF45D8 /* JMdictImporter.swift */,
 			);
-			name = JMdict;
 			path = JMdict;
 			sourceTree = "<group>";
 		};
@@ -250,7 +234,6 @@
 			children = (
 				2EC0E98D68F37FFEB0979F69 /* SRS */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};

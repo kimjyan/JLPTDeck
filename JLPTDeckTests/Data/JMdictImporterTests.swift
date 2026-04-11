@@ -13,12 +13,15 @@ final class JMdictImporterTests: XCTestCase {
         return try ModelContainer(for: schema, configurations: [config])
     }
 
-    private func loadFixtureEntries(_ name: String) throws -> [JMdictEntry] {
-        let bundle = Bundle(for: type(of: self))
-        guard let url = bundle.url(forResource: name, withExtension: "json") else {
-            XCTFail("missing test fixture \(name).json")
-            throw CocoaError(.fileNoSuchFile)
-        }
+    private func loadFixtureEntries(_ name: String, file: StaticString = #filePath) throws -> [JMdictEntry] {
+        // Resolve fixture relative to this source file so we don't depend on
+        // test bundle resource copying (which is flaky under Xcode 16
+        // synchronized file groups).
+        let thisFile = URL(fileURLWithPath: "\(file)")
+        let url = thisFile
+            .deletingLastPathComponent()
+            .appendingPathComponent("Fixtures")
+            .appendingPathComponent("\(name).json")
         let data = try Data(contentsOf: url)
         return try JSONDecoder().decode([JMdictEntry].self, from: data)
     }

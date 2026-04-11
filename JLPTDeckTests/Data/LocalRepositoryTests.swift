@@ -11,9 +11,12 @@ final class LocalRepositoryTests: XCTestCase {
         return try ModelContainer(for: schema, configurations: [config])
     }
 
-    private func loadFixtureEntries() throws -> [JMdictEntry] {
-        let bundle = Bundle(for: type(of: self))
-        let url = try XCTUnwrap(bundle.url(forResource: "jmdict_sample", withExtension: "json"))
+    private func loadFixtureEntries(file: StaticString = #filePath) throws -> [JMdictEntry] {
+        let thisFile = URL(fileURLWithPath: "\(file)")
+        let url = thisFile
+            .deletingLastPathComponent()
+            .appendingPathComponent("Fixtures")
+            .appendingPathComponent("jmdict_sample.json")
         let data = try Data(contentsOf: url)
         return try JSONDecoder().decode([JMdictEntry].self, from: data)
     }

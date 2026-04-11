@@ -1,0 +1,8 @@
+{
+  "name": "jlptdeck-harness",
+  "private": true,
+  "description": "Harness shim exposing xcodebuild tests to tooling that expects npm test.",
+  "scripts": {
+    "test": "xcodebuild test -project JLPTDeck.xcodeproj -scheme JLPTDeck -destination 'platform=iOS Simulator,name=iPhone 15' CODE_SIGNING_ALLOWED=NO"
+  }
+}

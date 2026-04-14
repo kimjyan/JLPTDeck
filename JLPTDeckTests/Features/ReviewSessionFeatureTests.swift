@@ -158,6 +158,31 @@ final class ReviewSessionFeatureTests: XCTestCase {
         XCTAssertEqual(upsertCalls.value.first?.1.reps, 0)
     }
 
+    func test_taskWithPreloaded_populatesStateWithoutRepoCall() async {
+        let card1 = makeCard()
+        let card2 = makeCard(headword: "飲む", reading: "のむ", gloss_ko: "마시다")
+        let distractors = (0..<4).map { i in
+            makeCard(headword: "x\(i)", gloss_ko: "뜻\(i)")
+        }
+        let srs: [UUID: SRSSnapshot] = [:]
+
+        let store = TestStore(initialState: ReviewSessionFeature.State()) {
+            ReviewSessionFeature()
+        } withDependencies: {
+            $0.continuousClock = ImmediateClock()
+            $0.date.now = Date(timeIntervalSince1970: 1_700_000_000)
+        }
+        store.exhaustivity = .off
+
+        await store.send(.view(.taskWithPreloaded(queue: [card1, card2], srs: srs, distractors: distractors)))
+
+        XCTAssertEqual(store.state.queue.count, 2)
+        XCTAssertEqual(store.state.distractorPool.count, 4)
+        XCTAssertEqual(store.state.index, 0)
+        XCTAssertNotNil(store.state.currentQuestion)
+        XCTAssertEqual(store.state.currentQuestion?.choices.count, 4)
+    }
+
     func test_closeTapped_delegatesAndFlagsClose() async {
         let store = TestStore(initialState: ReviewSessionFeature.State()) {
             ReviewSessionFeature()

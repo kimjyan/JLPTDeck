@@ -26,6 +26,10 @@ protocol LocalRepository {
     /// AND distinct from each other by `gloss_ko` (so distractors don't share a meaning).
     /// Useful for building 4-choice MCQ questions.
     func distractorCards(level: JLPTLevel, excluding: UUID, count: Int) throws -> [VocabCard]
+
+    /// Returns VocabCards that have a SRSState with lapses > 0, paired with that SRSState.
+    /// Sorted by `lastReview` descending (nil last). Filter by the given JLPT level.
+    func mistakenCards(level: JLPTLevel) throws -> [(VocabCard, SRSState)]
 }
 
 final class SwiftDataLocalRepository: LocalRepository {
@@ -113,6 +117,55 @@ final class SwiftDataLocalRepository: LocalRepository {
         } catch {
             throw RepositoryError.persistenceFailure(error)
         }
+    }
+
+    func mistakenCards(level: JLPTLevel) throws -> [(VocabCard, SRSState)] {
+        // Swift 6.2 note: `#Predicate { $0.lapses > 0 }` can be brittle under
+        // Approachable Concurrency macro expansion. Since the SRSState table is
+        // bounded by learned cards (much smaller than the card pool), full-fetch
+        // + Swift filter is simple and safe.
+        let levelRaw = level.rawValue
+        let states: [SRSState]
+        let cards: [VocabCard]
+        do {
+            let stateDescriptor = FetchDescriptor<SRSState>()
+            let allStates = try modelContext.fetch(stateDescriptor)
+            states = allStates.filter { $0.lapses > 0 }
+
+            guard !states.isEmpty else { return [] }
+
+            let cardDescriptor = FetchDescriptor<VocabCard>(
+                predicate: #Predicate { $0.jlptLevel == levelRaw }
+            )
+            cards = try modelContext.fetch(cardDescriptor)
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+
+        var stateByCardID: [UUID: SRSState] = [:]
+        stateByCardID.reserveCapacity(states.count)
+        for state in states {
+            stateByCardID[state.cardID] = state
+        }
+
+        var pairs: [(VocabCard, SRSState)] = []
+        pairs.reserveCapacity(states.count)
+        for card in cards {
+            if let state = stateByCardID[card.id] {
+                pairs.append((card, state))
+            }
+        }
+
+        // Sort by lastReview descending, nil last.
+        pairs.sort { lhs, rhs in
+            switch (lhs.1.lastReview, rhs.1.lastReview) {
+            case let (l?, r?): return l > r
+            case (_?, nil):    return true
+            case (nil, _?):    return false
+            case (nil, nil):   return false
+            }
+        }
+        return pairs
     }
 
     func distractorCards(level: JLPTLevel, excluding: UUID, count: Int) throws -> [VocabCard] {

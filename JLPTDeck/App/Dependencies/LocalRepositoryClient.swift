@@ -12,4 +12,5 @@ struct LocalRepositoryClient: Sendable {
     var upsertSRS: @Sendable (_ cardID: UUID, _ update: SRSUpdate, _ now: Date) async throws -> Void
     var distractorCards: @Sendable (_ level: JLPTLevel, _ excluding: UUID, _ count: Int) async throws -> [VocabCardDTO]
     var cardCount: @Sendable (_ level: JLPTLevel) async throws -> Int
+    var mistakenCards: @Sendable (_ level: JLPTLevel) async throws -> [VocabCardDTO.WithSRS]
 }

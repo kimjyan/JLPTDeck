@@ -12,11 +12,16 @@ struct RootView: View {
             }
         case .home:
             HomeView(
-                onStartReview: { store.send(.homeStartReviewTapped) }
+                onStartReview: { store.send(.homeStartReviewTapped) },
+                onShowMistakes: { store.send(.homeShowMistakesTapped) }
             )
         case .review:
             if let scoped = store.scope(state: \.review, action: \.review) {
                 ReviewSessionViewLegacyAdapter(store: scoped)
+            }
+        case .mistakes:
+            if let scoped = store.scope(state: \.mistakes, action: \.mistakes) {
+                MistakesViewLegacyAdapter(store: scoped)
             }
         }
     }
@@ -33,6 +38,18 @@ private struct ReviewSessionViewLegacyAdapter: View {
             store: store,
             level: settings.selectedLevel,
             dailyLimit: settings.dailyLimit,
+            onClose: { /* delegate handles routing */ }
+        )
+    }
+}
+
+private struct MistakesViewLegacyAdapter: View {
+    let store: StoreOf<MistakesFeature>
+    @Environment(UserSettings.self) private var settings
+    var body: some View {
+        MistakesView(
+            store: store,
+            level: settings.selectedLevel,
             onClose: { /* delegate handles routing */ }
         )
     }

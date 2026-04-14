@@ -15,7 +15,8 @@ extension LocalRepositoryClient: DependencyKey {
             todayReviewCards: { _, _, _ in fatalError("localRepository not configured") },
             upsertSRS: { _, _, _ in fatalError("localRepository not configured") },
             distractorCards: { _, _, _ in fatalError("localRepository not configured") },
-            cardCount: { _ in fatalError("localRepository not configured") }
+            cardCount: { _ in fatalError("localRepository not configured") },
+            mistakenCards: { _ in fatalError("localRepository not configured") }
         )
     }
 
@@ -51,6 +52,13 @@ extension LocalRepositoryClient: DependencyKey {
             cardCount: { level in
                 try await _runOnMain(container) { repo in
                     try repo.cards(for: level).count
+                }
+            },
+            mistakenCards: { level in
+                try await _runOnMain(container) { repo in
+                    try repo.mistakenCards(level: level).map { pair in
+                        VocabCardDTO.WithSRS(card: .init(from: pair.0), srs: pair.1.snapshot())
+                    }
                 }
             }
         )

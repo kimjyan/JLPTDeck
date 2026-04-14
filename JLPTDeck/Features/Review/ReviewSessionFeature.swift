@@ -42,6 +42,7 @@ struct ReviewSessionFeature {
         @CasePathable
         enum ViewAction: Equatable {
             case task(level: JLPTLevel, limit: Int)   // .task on appear
+            case taskWithPreloaded(queue: [VocabCardDTO], srs: [UUID: SRSSnapshot], distractors: [VocabCardDTO])
             case answerTapped(Int)
             case closeTapped
         }
@@ -70,6 +71,19 @@ struct ReviewSessionFeature {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case let .view(.taskWithPreloaded(queue, srs, distractors)):
+                state.queue = queue
+                state.srsByCardID = srs
+                state.distractorPool = distractors
+                state.index = 0
+                state.selectedAnswerIndex = nil
+                state.isAnswerRevealed = false
+                state.lastAnswerWasCorrect = nil
+                state.loadError = nil
+                state.delegateRequestedClose = false
+                regenerateQuestion(state: &state)
+                return .none
+
             case let .view(.task(level, limit)):
                 return loadEffect(level: level, limit: limit)
 

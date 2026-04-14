@@ -72,22 +72,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		801A7FBF2F8A8B6A00292277 /* JLPTDeck */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeck;
 			sourceTree = "<group>";
 		};
 		801A7FCF2F8A8B6B00292277 /* JLPTDeckTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeckTests;
 			sourceTree = "<group>";
 		};
 		801A7FD92F8A8B6B00292277 /* JLPTDeckUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = JLPTDeckUITests;
 			sourceTree = "<group>";
 		};

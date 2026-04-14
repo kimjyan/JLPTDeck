@@ -3,6 +3,7 @@ import SwiftData
 
 struct HomeView: View {
     let onStartReview: () -> Void
+    let onShowMistakes: () -> Void
 
     @Environment(UserSettings.self) private var settings
     @Environment(\.modelContext) private var modelContext
@@ -22,10 +23,35 @@ struct HomeView: View {
                     Label("통계", systemImage: "chart.bar.fill")
                 }
 
+            mistakesTab
+                .tabItem {
+                    Label("틀린 단어", systemImage: "exclamationmark.bubble.fill")
+                }
+
             SettingsView()
                 .tabItem {
                     Label("설정", systemImage: "gearshape.fill")
                 }
+        }
+    }
+
+    private var mistakesTab: some View {
+        VStack {
+            Spacer()
+            Button {
+                onShowMistakes()
+            } label: {
+                VStack(spacing: 20) {
+                    Image(systemName: "exclamationmark.bubble.fill")
+                        .font(.system(size: 64))
+                        .foregroundStyle(.red)
+                    Text("틀린 단어 보기").font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            }
+            .buttonStyle(.plain)
+            Spacer()
         }
     }
 

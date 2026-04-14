@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SessionCompleteView: View {
     let completedCount: Int
-    @Environment(AppRouter.self) private var router
+    let onDone: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -15,7 +15,7 @@ struct SessionCompleteView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button {
-                router.route = .home
+                onDone()
             } label: {
                 Text("홈으로")
                     .font(.headline)

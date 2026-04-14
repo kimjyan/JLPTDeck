@@ -1,13 +1,12 @@
-import SwiftUI
-import SwiftData
 import ComposableArchitecture
+import SwiftData
+import SwiftUI
 
 @main
 struct JLPTDeckApp: App {
-    @State private var settings = UserSettings()
-    @State private var router = AppRouter()
-
+    @State private var settings = UserSettings()   // legacy, still used by Stats/Settings/Home
     let sharedModelContainer: ModelContainer
+    let store: StoreOf<RootFeature>
 
     init() {
         let schema = Schema([
@@ -24,19 +23,23 @@ struct JLPTDeckApp: App {
         }
         self.sharedModelContainer = container
 
-        // Install the TCA live `LocalRepositoryClient` now that the container
-        // exists. Any Store created after this point inherits the live wiring
-        // without needing an explicit `withDependencies` trailing closure.
+        // Wire TCA dependencies so any Store created after this point inherits
+        // live wiring without needing an explicit `withDependencies` closure.
         prepareDependencies {
             $0.localRepository = .live(container: container)
         }
+
+        // Decide initial route from UserDefaults (matches UserSettingsClient key).
+        let onboardingDone = UserDefaults.standard.bool(forKey: "jlpt.onboardingComplete")
+        let initial = RootFeature.State.initial(onboardingComplete: onboardingDone)
+
+        store = Store(initialState: initial) { RootFeature() }
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(store: store)
                 .environment(settings)
-                .environment(router)
         }
         .modelContainer(sharedModelContainer)
     }

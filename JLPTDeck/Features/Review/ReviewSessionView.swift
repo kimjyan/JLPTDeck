@@ -15,7 +15,10 @@ struct ReviewSessionView: View {
                     if let err = store.loadError {
                         errorState(err)
                     } else if store.isComplete && !store.queue.isEmpty {
-                        SessionCompleteView(completedCount: store.queue.count)
+                        SessionCompleteView(
+                        completedCount: store.queue.count,
+                        onDone: { store.send(.view(.closeTapped)) }
+                    )
                     } else if let q = store.currentQuestion {
                         VStack(spacing: 16) {
                             Text("\(min(store.index + 1, store.queue.count)) / \(store.queue.count)")

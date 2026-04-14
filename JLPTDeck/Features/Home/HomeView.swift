@@ -2,7 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Environment(AppRouter.self) private var router
+    let onStartReview: () -> Void
+
     @Environment(UserSettings.self) private var settings
     @Environment(\.modelContext) private var modelContext
 
@@ -43,7 +44,7 @@ struct HomeView: View {
                 }
 
                 Button {
-                    router.route = .review
+                    onStartReview()
                 } label: {
                     Text("시작하기")
                         .font(.headline)

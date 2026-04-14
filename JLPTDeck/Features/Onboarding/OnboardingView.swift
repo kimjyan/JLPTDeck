@@ -3,8 +3,6 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Bindable var store: StoreOf<OnboardingFeature>
-    /// Bridge back to the legacy `AppRouter` until Phase 4 lands RootFeature.
-    var onComplete: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -33,9 +31,6 @@ struct OnboardingView: View {
             .padding()
             .navigationTitle("설정")
             .task { store.send(.view(.onAppear)) }
-            .onChange(of: store.isFinished) { _, newValue in
-                if newValue { onComplete() }
-            }
         }
     }
 

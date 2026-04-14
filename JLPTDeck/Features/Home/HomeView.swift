@@ -10,6 +10,25 @@ struct HomeView: View {
     @State private var errorMessage: String?
 
     var body: some View {
+        TabView {
+            homeTab
+                .tabItem {
+                    Label("홈", systemImage: "house.fill")
+                }
+
+            StatsView()
+                .tabItem {
+                    Label("통계", systemImage: "chart.bar.fill")
+                }
+
+            SettingsView()
+                .tabItem {
+                    Label("설정", systemImage: "gearshape.fill")
+                }
+        }
+    }
+
+    private var homeTab: some View {
         NavigationStack {
             VStack(spacing: 32) {
                 Spacer()

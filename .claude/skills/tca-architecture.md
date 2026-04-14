@@ -273,6 +273,7 @@ final class OnboardingFeatureTests: XCTestCase {
 3. **`BindableAction` + `BindingReducer` 가 매크로 expansion 깨뜨릴 수 있음** — 단순 setter actions (`.setFoo(Foo)`) 로 우회. View 에서 `Binding(get:set:)` 으로 store ↔ binding 어댑트.
 4. **CancelID enum 은 file-scope `private nonisolated`** — Reducer 안에 nested 로 두면 main-actor isolated Hashable 이 되어 `.cancellable(id:)` 의 Sendable 제약 위반.
 5. **빌드 시 `-skipMacroValidation` 필수** — TCA / 의존 패키지의 macro fingerprint 승인 CLI 우회.
+6. **`@CasePathable` 은 nested action enum 에 명시 필요** — `@Reducer` 매크로가 top-level Action enum 에만 자동 적용. `enum InternalAction`, `ViewAction`, `DelegateAction` 위에 `@CasePathable` 를 직접 붙여야 `\.internal.foo` / `\.view.bar` 같은 case key path 가 동작 (TestStore receive 에 필수).
 
 ## 금지 사항
 

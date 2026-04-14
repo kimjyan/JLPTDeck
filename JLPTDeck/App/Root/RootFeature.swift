@@ -22,6 +22,7 @@ struct RootFeature {
 
         case rootDestination(RootDestination)
 
+        @CasePathable
         enum RootDestination: Equatable {
             case showOnboarding
             case showHome

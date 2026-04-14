@@ -25,16 +25,19 @@ struct OnboardingFeature {
         case setLevel(JLPTLevel)
         case setDailyLimit(Int)
 
+        @CasePathable
         enum ViewAction: Equatable {
             case onAppear
             case nextTapped
             case backTapped
             case finishTapped
         }
+        @CasePathable
         enum InternalAction: Equatable {
             case importSucceeded
             case importFailed(String)
         }
+        @CasePathable
         enum DelegateAction: Equatable {
             case completed
         }

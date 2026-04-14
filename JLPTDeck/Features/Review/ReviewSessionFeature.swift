@@ -39,16 +39,19 @@ struct ReviewSessionFeature {
         case `internal`(InternalAction)
         case delegate(DelegateAction)
 
+        @CasePathable
         enum ViewAction: Equatable {
             case task(level: JLPTLevel, limit: Int)   // .task on appear
             case answerTapped(Int)
             case closeTapped
         }
+        @CasePathable
         enum InternalAction: Equatable {
             case loadResult(Result<LoadPayload, EquatableError>)
             case autoAdvanceFired
             case upsertFailed(String)
         }
+        @CasePathable
         enum DelegateAction: Equatable {
             case requestClose
         }

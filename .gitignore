@@ -30,3 +30,4 @@ Package.resolved
 # Claude
 .claude/cache/
 .claude/local/
+.claude/scheduled_tasks.lock

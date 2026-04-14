@@ -1,89 +1,72 @@
+import ComposableArchitecture
 import SwiftUI
-import SwiftData
 
 struct ReviewSessionView: View {
-    @Environment(AppRouter.self) private var router
-    @Environment(UserSettings.self) private var settings
-    @Environment(\.modelContext) private var modelContext
-
-    @State private var vm: ReviewSessionViewModel?
-    @State private var loadError: String?
+    @Bindable var store: StoreOf<ReviewSessionFeature>
+    let level: JLPTLevel
+    let dailyLimit: Int
+    var onClose: () -> Void
 
     var body: some View {
         NavigationStack {
-            Group {
-                if let vm {
-                    content(vm: vm)
-                } else if let loadError {
-                    VStack(spacing: 12) {
-                        Text("불러오기 실패")
-                            .font(.headline)
-                        Text(loadError)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Button("닫기") { router.route = .home }
+            VStack(spacing: 0) {
+                Divider()
+                Group {
+                    if let err = store.loadError {
+                        errorState(err)
+                    } else if store.isComplete && !store.queue.isEmpty {
+                        SessionCompleteView(completedCount: store.queue.count)
+                    } else if let q = store.currentQuestion {
+                        VStack(spacing: 16) {
+                            Text("\(min(store.index + 1, store.queue.count)) / \(store.queue.count)")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                            QuizCardView(
+                                question: q,
+                                selectedIndex: store.selectedAnswerIndex,
+                                isRevealed: store.isAnswerRevealed,
+                                onSelect: { idx in
+                                    store.send(.view(.answerTapped(idx)))
+                                    if idx == q.correctIndex {
+                                        HapticsManager.success()
+                                    } else {
+                                        HapticsManager.error()
+                                    }
+                                }
+                            )
+                            .padding(.horizontal)
+                            .padding(.bottom)
+                        }
+                    } else {
+                        ProgressView()
                     }
-                    .padding()
-                } else {
-                    ProgressView()
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("닫기") { router.route = .home }
+                    Button("닫기") { store.send(.view(.closeTapped)) }
                 }
             }
         }
-        .task {
-            await loadSession()
+        .task { await store.send(.view(.task(level: level, limit: dailyLimit))).finish() }
+        .onChange(of: store.delegateRequestedClose) { _, requested in
+            if requested { onClose() }
         }
     }
 
     @ViewBuilder
-    private func content(vm: ReviewSessionViewModel) -> some View {
-        if vm.isComplete {
-            SessionCompleteView(completedCount: vm.completedCount)
-        } else if let q = vm.currentQuestion {
-            VStack(spacing: 16) {
-                Text("\(vm.index + 1) / \(vm.queue.count)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                QuizCardView(
-                    question: q,
-                    selectedIndex: vm.selectedAnswerIndex,
-                    isRevealed: vm.isAnswerRevealed
-                ) { idx in
-                    vm.submitAnswer(idx)
-                    if vm.lastAnswerWasCorrect == true {
-                        HapticsManager.success()
-                    } else {
-                        HapticsManager.error()
-                    }
-                    Task {
-                        try? await Task.sleep(nanoseconds: 1_200_000_000)
-                        withAnimation { vm.advance() }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom)
-            }
+    private func errorState(_ msg: String) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundStyle(.orange)
+            Text("불러오기 실패")
+                .font(.headline)
+            Text(msg).font(.caption).foregroundStyle(.secondary)
+            Button("닫기") { store.send(.view(.closeTapped)) }
+                .buttonStyle(.borderedProminent)
         }
-    }
-
-    @MainActor
-    private func loadSession() async {
-        if vm != nil { return }
-        let repo = SwiftDataLocalRepository(modelContext: modelContext)
-        let newVM = ReviewSessionViewModel(repo: repo)
-        do {
-            try await newVM.loadToday(
-                level: settings.selectedLevel,
-                limit: settings.dailyLimit
-            )
-            self.vm = newVM
-        } catch {
-            self.loadError = String(describing: error)
-        }
+        .padding()
     }
 }

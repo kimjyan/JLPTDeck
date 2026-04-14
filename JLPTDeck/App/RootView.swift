@@ -25,7 +25,14 @@ struct RootView: View {
             case .home:
                 HomeView()
             case .review:
-                ReviewSessionView()
+                ReviewSessionView(
+                    store: Store(initialState: ReviewSessionFeature.State()) {
+                        ReviewSessionFeature()
+                    },
+                    level: settings.selectedLevel,
+                    dailyLimit: settings.dailyLimit,
+                    onClose: { router.route = .home }
+                )
             }
         }
         .task {

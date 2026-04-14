@@ -82,9 +82,15 @@ struct ReviewSessionFeature {
                 state.loadError = nil
                 state.delegateRequestedClose = false
                 regenerateQuestion(state: &state)
-                return .none
+                // Kill any in-flight regular loadEffect so a late
+                // .internal(.loadResult(.success)) can't overwrite the
+                // preloaded queue (focused-review race fix).
+                return .cancel(id: ReviewSessionCancelID.loadToday)
 
             case let .view(.task(level, limit)):
+                // Focused-review preload already populated the queue; skip
+                // the regular repo fetch to avoid overwriting it.
+                guard state.queue.isEmpty else { return .none }
                 return loadEffect(level: level, limit: limit)
 
             case let .view(.answerTapped(idx)):

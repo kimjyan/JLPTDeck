@@ -16,7 +16,8 @@
 
 ## Testing
 - Unit tests live in `JLPTDeckTests/` (Xcode target), mirrored from `tests/` stub.
-- Run: `xcodebuild test -scheme JLPTDeck -destination 'platform=iOS Simulator,name=iPhone 15'`
+- Run: `xcodebuild test -scheme JLPTDeck -destination 'platform=iOS Simulator,name=iPhone 17' -skipMacroValidation -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1`
+- `-skipMacroValidation` 필수 (TCA 매크로 fingerprint 승인 CLI 우회)
 
 ## Architecture Migration (In Progress)
 - **2026-04-14** 기점으로 UI 레이어를 **TCA** 로 전환하기로 결정.

@@ -264,6 +264,16 @@ final class OnboardingFeatureTests: XCTestCase {
 
 각 단계마다 25/25 테스트 회귀 실행.
 
+## Swift 6.2 + Approachable Concurrency 함정
+
+이 프로젝트는 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` (Approachable Concurrency 활성). 다음 함정 주의:
+
+1. **`some ReducerOf<Self>` 금지** — Swift 6 매크로 expander 가 `Self` 해석 중 circular reference. **`some Reducer<State, Action>` 명시 사용**.
+2. **`@Reducer` 안의 nested enum `View`/`Internal`/`Delegate` 명명 주의** — `View` 는 SwiftUI.View 와 충돌. **`ViewAction` / `InternalAction` / `DelegateAction` 사용**.
+3. **`BindableAction` + `BindingReducer` 가 매크로 expansion 깨뜨릴 수 있음** — 단순 setter actions (`.setFoo(Foo)`) 로 우회. View 에서 `Binding(get:set:)` 으로 store ↔ binding 어댑트.
+4. **CancelID enum 은 file-scope `private nonisolated`** — Reducer 안에 nested 로 두면 main-actor isolated Hashable 이 되어 `.cancellable(id:)` 의 Sendable 제약 위반.
+5. **빌드 시 `-skipMacroValidation` 필수** — TCA / 의존 패키지의 macro fingerprint 승인 CLI 우회.
+
 ## 금지 사항
 
 - `@Observable` 신규 ViewModel 작성 금지 (기존 것은 마이그레이션 대기 중 유지)

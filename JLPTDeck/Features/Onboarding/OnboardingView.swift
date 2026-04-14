@@ -1,83 +1,92 @@
+import ComposableArchitecture
 import SwiftUI
-import SwiftData
 
 struct OnboardingView: View {
-    @Environment(UserSettings.self) private var settings
-    @Environment(AppRouter.self) private var router
-    @Environment(\.modelContext) private var modelContext
-
-    @State private var viewModel = OnboardingViewModel()
+    @Bindable var store: StoreOf<OnboardingFeature>
+    /// Bridge back to the legacy `AppRouter` until Phase 4 lands RootFeature.
+    var onComplete: () -> Void
 
     var body: some View {
         NavigationStack {
-            VStack {
-                if viewModel.isImporting {
-                    importingView
+            VStack(spacing: 32) {
+                Spacer()
+                if store.stepIndex == 0 {
+                    LevelPickerSection(
+                        selection: store.selectedLevel,
+                        onChange: { store.send(.setLevel($0)) }
+                    )
                 } else {
-                    stepContent
-                }
-            }
-            .navigationTitle("시작하기")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-
-    @ViewBuilder
-    private var stepContent: some View {
-        VStack(spacing: 24) {
-            switch viewModel.stepIndex {
-            case 0:
-                LevelPickerView()
-            default:
-                DailyLimitView()
-            }
-
-            Spacer()
-
-            HStack {
-                if viewModel.stepIndex > 0 {
-                    Button("이전") {
-                        viewModel.back()
-                    }
-                    .buttonStyle(.bordered)
+                    DailyLimitSection(
+                        limit: store.dailyLimit,
+                        onChange: { store.send(.setDailyLimit($0)) }
+                    )
                 }
                 Spacer()
-                if viewModel.stepIndex < 1 {
-                    Button("다음") {
-                        viewModel.next()
-                    }
+                if store.isImporting {
+                    ProgressView("불러오는 중…")
+                }
+                if let err = store.importError {
+                    Text(err).foregroundStyle(.red).font(.footnote)
+                }
+                controls
+            }
+            .padding()
+            .navigationTitle("설정")
+            .task { store.send(.view(.onAppear)) }
+            .onChange(of: store.isFinished) { _, newValue in
+                if newValue { onComplete() }
+            }
+        }
+    }
+
+    private var controls: some View {
+        HStack {
+            if store.stepIndex > 0 {
+                Button("이전") { store.send(.view(.backTapped)) }
+                    .buttonStyle(.bordered)
+            }
+            Spacer()
+            if store.stepIndex == 1 {
+                Button("시작") { store.send(.view(.finishTapped)) }
                     .buttonStyle(.borderedProminent)
-                } else {
-                    Button("완료") {
-                        Task { await runFinish() }
-                    }
+                    .disabled(store.isImporting)
+            } else {
+                Button("다음") { store.send(.view(.nextTapped)) }
                     .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+}
+
+private struct LevelPickerSection: View {
+    let selection: JLPTLevel
+    let onChange: (JLPTLevel) -> Void
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("JLPT 레벨").font(.headline)
+            Picker("레벨", selection: Binding(get: { selection }, set: onChange)) {
+                ForEach(JLPTLevel.allCases, id: \.self) { level in
+                    Text(level.rawValue.uppercased()).tag(level)
                 }
             }
-            .padding(.horizontal)
-            .padding(.bottom)
+            .pickerStyle(.segmented)
         }
     }
+}
 
-    private var importingView: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.5)
-            Text("단어를 불러오는 중…")
-                .font(.body)
-                .foregroundStyle(.secondary)
-            if let err = viewModel.importError {
-                Text(err)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .padding()
+private struct DailyLimitSection: View {
+    let limit: Int
+    let onChange: (Int) -> Void
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("일일 학습량").font(.headline)
+            Stepper(
+                value: Binding(get: { limit }, set: onChange),
+                in: 10...50,
+                step: 5
+            ) {
+                Text("\(limit) 카드/일")
             }
         }
-    }
-
-    @MainActor
-    private func runFinish() async {
-        let repo = SwiftDataLocalRepository(modelContext: modelContext)
-        await viewModel.finish(repo: repo, settings: settings, router: router)
     }
 }

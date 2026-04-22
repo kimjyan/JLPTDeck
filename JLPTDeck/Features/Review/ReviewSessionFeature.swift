@@ -109,6 +109,9 @@ struct ReviewSessionFeature {
                     lapses: 0, lastReview: nil, dueDate: now
                 )
                 let update = SM2.nextState(current: snapshot, quality: quality, now: now)
+                // Optimistic: update in-memory SRS state immediately. If upsertSRS
+                // fails, the disk state lags behind until the next app launch reloads
+                // from SwiftData. Acceptable for a learning app — no financial risk.
                 state.srsByCardID[card.id] = SRSSnapshot(
                     cardID: card.id,
                     ease: update.ease,

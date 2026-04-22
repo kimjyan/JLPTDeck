@@ -5,6 +5,8 @@ private nonisolated enum OnboardingCancelID: Hashable, Sendable { case importJob
 
 @Reducer
 struct OnboardingFeature {
+    static let totalSteps = 2
+
     @ObservableState
     struct State: Equatable {
         var stepIndex: Int = 0
@@ -55,7 +57,7 @@ struct OnboardingFeature {
                 return .none
 
             case .view(.nextTapped):
-                state.stepIndex = min(state.stepIndex + 1, 1)
+                state.stepIndex = min(state.stepIndex + 1, Self.totalSteps - 1)
                 return .none
 
             case .view(.backTapped):

@@ -40,7 +40,7 @@ struct MistakesView: View {
             .safeAreaInset(edge: .bottom) {
                 reviewButton
             }
-            .task { store.send(.view(.task(level: level))) }
+            .task(id: level) { store.send(.view(.task(level: level))) }
             .onChange(of: store.delegateRequestedClose) { _, closed in
                 if closed { onClose() }
             }

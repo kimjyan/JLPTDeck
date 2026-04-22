@@ -14,7 +14,7 @@ struct ReviewSessionView: View {
                 Group {
                     if let err = store.loadError {
                         errorState(err)
-                    } else if store.isComplete && !store.queue.isEmpty {
+                    } else if store.isComplete {
                         SessionCompleteView(
                         completedCount: store.queue.count,
                         onDone: { store.send(.view(.closeTapped)) }

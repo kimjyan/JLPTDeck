@@ -164,6 +164,11 @@ struct ReviewSessionFeature {
                 return .none
 
             case .internal(.autoAdvanceFired):
+                // Re-queue wrong cards at the end so the user gets another
+                // attempt within the same session (immediate re-exposure).
+                if state.lastAnswerWasCorrect == false, let card = state.currentCard {
+                    state.queue.append(card)
+                }
                 state.index += 1
                 state.selectedAnswerIndex = nil
                 state.isAnswerRevealed = false

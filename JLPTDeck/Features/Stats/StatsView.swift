@@ -123,7 +123,6 @@ struct StatsView: View {
                 var descriptor = FetchDescriptor<VocabCard>(
                     predicate: #Predicate<VocabCard> { $0.jlptLevel == level.rawValue }
                 )
-                descriptor.propertiesToFetch = [\.id]
                 let cards = try modelContext.fetch(descriptor)
                 let totalAtLevel = cards.count
                 let reviewedAtLevel = cards.filter { reviewedCardIDs.contains($0.id) }.count

@@ -59,6 +59,8 @@ struct SettingsView: View {
             .onDisappear {
                 settings.save()
             }
+            .onChange(of: settings.selectedLevel) { _, _ in settings.save() }
+            .onChange(of: settings.dailyLimit) { _, _ in settings.save() }
             .alert("데이터 초기화", isPresented: $showResetConfirmation) {
                 Button("취소", role: .cancel) {}
                 Button("초기화", role: .destructive) {

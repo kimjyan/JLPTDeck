@@ -11,6 +11,9 @@ struct UserSettingsClient: Sendable {
     var saveLevel: @Sendable (JLPTLevel) -> Void
     var saveDailyLimit: @Sendable (Int) -> Void
     var saveOnboardingComplete: @Sendable (Bool) -> Void
+    var loadStreak: @Sendable () -> Int
+    var loadLastStudyDate: @Sendable () -> Date?
+    var updateStreak: @Sendable () -> Int
 }
 
 extension UserSettingsClient: DependencyKey {
@@ -35,6 +38,35 @@ extension UserSettingsClient: DependencyKey {
             },
             saveOnboardingComplete: { v in
                 defaults.set(v, forKey: "jlpt.onboardingComplete")
+            },
+            loadStreak: {
+                defaults.integer(forKey: "jlpt.streak")
+            },
+            loadLastStudyDate: {
+                defaults.object(forKey: "jlpt.lastStudyDate") as? Date
+            },
+            updateStreak: {
+                let calendar = Calendar.current
+                let today = calendar.startOfDay(for: Date())
+                let last = (defaults.object(forKey: "jlpt.lastStudyDate") as? Date)
+                    .map { calendar.startOfDay(for: $0) }
+                let current = defaults.integer(forKey: "jlpt.streak")
+
+                let newStreak: Int
+                if let last {
+                    if last == today {
+                        newStreak = max(current, 1)
+                    } else if calendar.date(byAdding: .day, value: 1, to: last) == today {
+                        newStreak = current + 1
+                    } else {
+                        newStreak = 1
+                    }
+                } else {
+                    newStreak = 1
+                }
+                defaults.set(newStreak, forKey: "jlpt.streak")
+                defaults.set(today, forKey: "jlpt.lastStudyDate")
+                return newStreak
             }
         )
     }()

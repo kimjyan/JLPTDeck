@@ -52,6 +52,8 @@ final class RootFeatureTests: XCTestCase {
             initialState: RootFeature.State.review(ReviewSessionFeature.State())
         ) {
             RootFeature()
+        } withDependencies: {
+            $0.userSettings.updateStreak = { 1 }
         }
         store.exhaustivity = .off
 

@@ -9,6 +9,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var todayCount: Int = 0
+    @State private var streak: Int = 0
     @State private var errorMessage: String?
 
     var body: some View {
@@ -59,6 +60,12 @@ struct HomeView: View {
         NavigationStack {
             VStack(spacing: 32) {
                 Spacer()
+                if streak > 0 {
+                    Label("\(streak)일 연속", systemImage: "flame.fill")
+                        .font(.headline)
+                        .foregroundStyle(.orange)
+                }
+
                 Text("오늘 학습할 카드 \(todayCount)개")
                     .font(.title)
                     .fontWeight(.semibold)
@@ -84,7 +91,10 @@ struct HomeView: View {
                 Spacer()
             }
             .navigationTitle("JLPTDeck")
-            .onAppear(perform: recomputeCount)
+            .onAppear {
+                recomputeCount()
+                streak = UserDefaults.standard.integer(forKey: "jlpt.streak")
+            }
         }
     }
 

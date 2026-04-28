@@ -54,8 +54,9 @@ struct RootFeature {
                 state = .mistakes(MistakesFeature.State())
                 return .none
 
-            // Review close → home
+            // Review close → home (update streak on session completion)
             case (.review, .review(.delegate(.requestClose))):
+                let _ = settings.updateStreak()
                 state = .home
                 return .none
 

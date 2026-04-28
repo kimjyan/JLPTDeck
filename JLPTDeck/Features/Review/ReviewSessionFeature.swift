@@ -24,6 +24,8 @@ struct ReviewSessionFeature {
         var selectedAnswerIndex: Int? = nil
         var isAnswerRevealed: Bool = false
         var lastAnswerWasCorrect: Bool? = nil
+        var correctCount: Int = 0
+        var wrongCount: Int = 0
         var loadError: String? = nil
         /// View-side bridge for `.delegate(.requestClose)`. The View observes this
         /// via `onChange` to call its `onClose` closure. Phase 4 will replace this
@@ -102,6 +104,7 @@ struct ReviewSessionFeature {
                 let isCorrect = idx == q.correctIndex
                 state.lastAnswerWasCorrect = isCorrect
 
+                if isCorrect { state.correctCount += 1 } else { state.wrongCount += 1 }
                 let quality: SRSQuality = isCorrect ? .good : .again
                 let now = date.now
                 let snapshot = state.srsByCardID[card.id] ?? SRSSnapshot(

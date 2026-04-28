@@ -17,6 +17,8 @@ struct ReviewSessionView: View {
                     } else if store.isComplete {
                         SessionCompleteView(
                         completedCount: store.queue.count,
+                        correctCount: store.correctCount,
+                        wrongCount: store.wrongCount,
                         onDone: { store.send(.view(.closeTapped)) }
                     )
                     } else if let q = store.currentQuestion {

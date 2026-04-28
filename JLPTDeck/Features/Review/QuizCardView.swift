@@ -12,13 +12,15 @@ struct QuizCardView: View {
             VStack(spacing: 12) {
                 Text(question.prompt)
                     .font(.system(size: 80, weight: .bold))
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
+                    .minimumScaleFactor(0.3)
+                    .lineLimit(2)
+                    .accessibilityLabel("문제: \(question.prompt)")
                 if isRevealed {
                     Text(question.reading)
                         .font(.title3)
                         .foregroundStyle(.secondary)
                         .transition(.opacity)
+                        .accessibilityLabel("읽기: \(question.reading)")
                 }
             }
             .frame(maxWidth: .infinity)
@@ -44,6 +46,8 @@ struct QuizCardView: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(isRevealed)
+                    .accessibilityLabel(accessibilityLabelFor(i))
+                    .accessibilityHint(isRevealed ? "" : "탭하여 선택")
                 }
             }
             .padding(.horizontal)
@@ -67,5 +71,13 @@ struct QuizCardView: View {
     private func borderFor(_ i: Int) -> Color {
         guard isRevealed else { return .blue.opacity(0.4) }
         return .clear
+    }
+
+    private func accessibilityLabelFor(_ i: Int) -> String {
+        let choice = question.choices[i]
+        guard isRevealed else { return "선택지 \(i + 1): \(choice)" }
+        if i == question.correctIndex { return "\(choice), 정답" }
+        if i == selectedIndex { return "\(choice), 오답" }
+        return choice
     }
 }

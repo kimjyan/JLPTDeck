@@ -6,18 +6,12 @@ struct RootFeature {
 
     @ObservableState
     enum State: Equatable {
-        case onboarding(OnboardingFeature.State)
         case home          // legacy TabView, no state in TCA yet
         case review(ReviewSessionFeature.State)
         case mistakes(MistakesFeature.State)
-
-        static func initial(onboardingComplete: Bool) -> State {
-            onboardingComplete ? .home : .onboarding(OnboardingFeature.State())
-        }
     }
 
     enum Action: Equatable {
-        case onboarding(OnboardingFeature.Action)
         case review(ReviewSessionFeature.Action)
         case mistakes(MistakesFeature.Action)
         case homeStartReviewTapped     // legacy HomeView "시작하기" still bridges via callback
@@ -27,7 +21,6 @@ struct RootFeature {
 
         @CasePathable
         enum RootDestination: Equatable {
-            case showOnboarding
             case showHome
             case showReview
             case showMistakes
@@ -39,11 +32,6 @@ struct RootFeature {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch (state, action) {
-            // Onboarding completion → home
-            case (.onboarding, .onboarding(.delegate(.completed))):
-                state = .home
-                return .none
-
             // Home start review → review
             case (.home, .homeStartReviewTapped):
                 state = .review(ReviewSessionFeature.State())
@@ -71,9 +59,6 @@ struct RootFeature {
                 return .send(.review(.view(.taskWithPreloaded(queue: queue, srs: srs, distractors: distractors))))
 
             // Direct destination changes (used by tests / programmatic navigation)
-            case (_, .rootDestination(.showOnboarding)):
-                state = .onboarding(OnboardingFeature.State())
-                return .none
             case (_, .rootDestination(.showHome)):
                 state = .home
                 return .none
@@ -88,9 +73,6 @@ struct RootFeature {
             default:
                 return .none
             }
-        }
-        .ifCaseLet(\.onboarding, action: \.onboarding) {
-            OnboardingFeature()
         }
         .ifCaseLet(\.review, action: \.review) {
             ReviewSessionFeature()

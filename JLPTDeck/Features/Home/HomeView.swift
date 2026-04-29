@@ -11,6 +11,7 @@ struct HomeView: View {
     @State private var todayCount: Int = 0
     @State private var streak: Int = 0
     @State private var errorMessage: String?
+    @State private var isImporting = false
 
     var body: some View {
         TabView {
@@ -60,39 +61,67 @@ struct HomeView: View {
         NavigationStack {
             VStack(spacing: 32) {
                 Spacer()
-                if streak > 0 {
-                    Label("\(streak)일 연속", systemImage: "flame.fill")
-                        .font(.headline)
-                        .foregroundStyle(.orange)
-                }
 
-                Text("오늘 학습할 카드 \(todayCount)개")
-                    .font(.title)
-                    .fontWeight(.semibold)
+                if isImporting {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                        Text("단어 불러오는 중...")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    if streak > 0 {
+                        Label("\(streak)일 연속", systemImage: "flame.fill")
+                            .font(.headline)
+                            .foregroundStyle(.orange)
+                    }
 
-                if let errorMessage {
-                    Text(errorMessage)
+                    Text("오늘 학습할 카드 \(todayCount)개")
+                        .font(.title)
+                        .fontWeight(.semibold)
+
+                    Text("\(settings.selectedLevel.rawValue.uppercased()) · \(settings.dailyLimit)개/일")
                         .font(.caption)
-                        .foregroundStyle(.red)
-                }
+                        .foregroundStyle(.secondary)
 
-                Button {
-                    onStartReview()
-                } label: {
-                    Text("시작하기")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+
+                    Button {
+                        onStartReview()
+                    } label: {
+                        Text("시작하기")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(todayCount == 0)
+                    .padding(.horizontal, 32)
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(todayCount == 0)
-                .padding(.horizontal, 32)
 
                 Spacer()
             }
             .navigationTitle("JLPTDeck")
             .onAppear {
-                recomputeCount()
+                // Auto-import on first launch (idempotent — skips if cards exist)
+                var descriptor = FetchDescriptor<VocabCard>()
+                descriptor.fetchLimit = 1
+                let count = (try? modelContext.fetchCount(descriptor)) ?? 0
+                if count == 0 {
+                    isImporting = true
+                    let importer = JMdictImporter(modelContext: modelContext, bundle: .main)
+                    Task {
+                        try? await importer.importIfNeeded()
+                        isImporting = false
+                        recomputeCount()
+                    }
+                } else {
+                    recomputeCount()
+                }
                 streak = UserDefaults.standard.integer(forKey: "jlpt.streak")
             }
         }

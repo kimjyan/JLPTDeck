@@ -29,11 +29,7 @@ struct JLPTDeckApp: App {
             $0.localRepository = .live(container: container)
         }
 
-        // Decide initial route from UserDefaults (matches UserSettingsClient key).
-        let onboardingDone = UserDefaults.standard.bool(forKey: "jlpt.onboardingComplete")
-        let initial = RootFeature.State.initial(onboardingComplete: onboardingDone)
-
-        store = Store(initialState: initial) { RootFeature() }
+        store = Store(initialState: .home) { RootFeature() }
     }
 
     var body: some Scene {

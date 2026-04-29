@@ -7,10 +7,8 @@ import Foundation
 struct UserSettingsClient: Sendable {
     var loadLevel: @Sendable () -> JLPTLevel
     var loadDailyLimit: @Sendable () -> Int
-    var loadOnboardingComplete: @Sendable () -> Bool
     var saveLevel: @Sendable (JLPTLevel) -> Void
     var saveDailyLimit: @Sendable (Int) -> Void
-    var saveOnboardingComplete: @Sendable (Bool) -> Void
     var loadStreak: @Sendable () -> Int
     var loadLastStudyDate: @Sendable () -> Date?
     var updateStreak: @Sendable () -> Int
@@ -27,17 +25,11 @@ extension UserSettingsClient: DependencyKey {
                 let v = defaults.integer(forKey: "jlpt.dailyLimit")
                 return v == 0 ? 20 : v
             },
-            loadOnboardingComplete: {
-                defaults.bool(forKey: "jlpt.onboardingComplete")
-            },
             saveLevel: { level in
                 defaults.set(level.rawValue, forKey: "jlpt.level")
             },
             saveDailyLimit: { v in
                 defaults.set(v, forKey: "jlpt.dailyLimit")
-            },
-            saveOnboardingComplete: { v in
-                defaults.set(v, forKey: "jlpt.onboardingComplete")
             },
             loadStreak: {
                 defaults.integer(forKey: "jlpt.streak")

@@ -6,10 +6,6 @@ struct RootView: View {
 
     var body: some View {
         switch store.state {
-        case .onboarding:
-            if let scoped = store.scope(state: \.onboarding, action: \.onboarding) {
-                OnboardingView(store: scoped)
-            }
         case .home:
             HomeView(
                 onStartReview: { store.send(.homeStartReviewTapped) },

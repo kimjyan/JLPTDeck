@@ -51,10 +51,10 @@ struct MistakesView: View {
         VStack(spacing: 12) {
             Image(systemName: "checkmark.circle")
                 .font(.largeTitle)
-                .foregroundStyle(.green)
-            Text("아직 틀린 단어가 없어요").font(.headline)
+                .foregroundStyle(Theme.green)
+            Text("아직 틀린 단어가 없어요").font(.headline).foregroundStyle(Theme.text)
             Text("복습 중 오답이 생기면 여기에 모입니다.")
-                .font(.footnote).foregroundStyle(.secondary)
+                .font(.footnote).foregroundStyle(Theme.secondary)
         }
     }
 
@@ -63,9 +63,9 @@ struct MistakesView: View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
-                .foregroundStyle(.orange)
-            Text("불러오기 실패").font(.headline)
-            Text(msg).font(.caption).foregroundStyle(.secondary)
+                .foregroundStyle(Theme.orange)
+            Text("불러오기 실패").font(.headline).foregroundStyle(Theme.text)
+            Text(msg).font(.caption).foregroundStyle(Theme.secondary)
         }
         .padding()
     }
@@ -94,20 +94,20 @@ private struct MistakeRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline) {
-                Text(card.headword).font(.title3).bold()
-                Text(card.reading).font(.caption).foregroundStyle(.secondary)
+                Text(card.headword).font(.title3).bold().foregroundStyle(Theme.text)
+                Text(card.reading).font(.caption).foregroundStyle(Theme.secondary)
                 Spacer()
                 Text("\(lapses)회 틀림")
                     .font(.caption2)
                     .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(Color.red.opacity(0.15))
-                    .foregroundStyle(.red)
+                    .background(Theme.redChipBg)
+                    .foregroundStyle(Theme.red)
                     .clipShape(Capsule())
             }
-            Text(card.gloss_ko).font(.subheadline).foregroundStyle(.secondary)
+            Text(card.gloss_ko).font(.subheadline).foregroundStyle(Theme.secondary)
             if let d = lastReview {
                 Text("마지막 복습: \(d.formatted(.relative(presentation: .named)))")
-                    .font(.caption2).foregroundStyle(.tertiary)
+                    .font(.caption2).foregroundStyle(Theme.tertiary)
             }
         }
         .padding(.vertical, 4)

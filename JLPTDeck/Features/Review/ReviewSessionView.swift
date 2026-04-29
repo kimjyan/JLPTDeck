@@ -24,8 +24,8 @@ struct ReviewSessionView: View {
                     } else if let q = store.currentQuestion {
                         VStack(spacing: 16) {
                             Text("\(min(store.index + 1, store.queue.count)) / \(store.queue.count)")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13))
+                                .foregroundStyle(Theme.secondary)
                             QuizCardView(
                                 question: q,
                                 selectedIndex: store.selectedAnswerIndex,
@@ -65,10 +65,11 @@ struct ReviewSessionView: View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
-                .foregroundStyle(.orange)
+                .foregroundStyle(Theme.orange)
             Text("불러오기 실패")
                 .font(.headline)
-            Text(msg).font(.caption).foregroundStyle(.secondary)
+                .foregroundStyle(Theme.text)
+            Text(msg).font(.caption).foregroundStyle(Theme.secondary)
             Button("닫기") { store.send(.view(.closeTapped)) }
                 .buttonStyle(.borderedProminent)
         }

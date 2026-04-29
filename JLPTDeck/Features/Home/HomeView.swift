@@ -46,8 +46,8 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     Image(systemName: "exclamationmark.bubble.fill")
                         .font(.system(size: 64))
-                        .foregroundStyle(.red)
-                    Text("틀린 단어 보기").font(.headline)
+                        .foregroundStyle(Theme.red)
+                    Text("틀린 단어 보기").font(.headline).foregroundStyle(Theme.text)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -67,27 +67,27 @@ struct HomeView: View {
                         ProgressView()
                         Text("단어 불러오는 중...")
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondary)
                     }
                 } else {
                     if streak > 0 {
                         Label("\(streak)일 연속", systemImage: "flame.fill")
                             .font(.headline)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Theme.orange)
                     }
 
                     Text("오늘 학습할 카드 \(todayCount)개")
-                        .font(.title)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundStyle(Theme.text)
 
                     Text("\(settings.selectedLevel.rawValue.uppercased()) · \(settings.dailyLimit)개/일")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondary)
 
                     if let errorMessage {
                         Text(errorMessage)
                             .font(.caption)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Theme.red)
                     }
 
                     Button {

@@ -36,11 +36,11 @@ struct SettingsView: View {
                         Text("버전")
                         Spacer()
                         Text(appVersion)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondary)
                     }
                     Text("Data: JMdict (CC BY-SA), Tanos JLPT lists")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondary)
                 }
 
                 Section {

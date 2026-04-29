@@ -10,28 +10,29 @@ struct SessionCompleteView: View {
         VStack(spacing: 24) {
             Spacer()
             Text("오늘 \(completedCount)개 완료!")
-                .font(.largeTitle)
-                .fontWeight(.bold)
+                .font(.system(size: 34, weight: .bold))
+                .tracking(-1)
+                .foregroundStyle(Theme.text)
             if correctCount + wrongCount > 0 {
-                HStack(spacing: 16) {
+                HStack(spacing: 24) {
                     Label("정답 \(correctCount)", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
+                        .foregroundStyle(Theme.green)
                     Label("오답 \(wrongCount)", systemImage: "xmark.circle.fill")
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Theme.red)
                 }
-                .font(.headline)
+                .font(.system(size: 17, weight: .semibold))
             }
             Text("수고하셨습니다.")
-                .font(.body)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 17))
+                .foregroundStyle(Theme.secondary)
             Spacer()
             Button {
                 onDone()
             } label: {
                 Text("홈으로")
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .semibold))
                     .frame(maxWidth: .infinity)
-                    .padding()
+                    .padding(.vertical, 14)
             }
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 32)

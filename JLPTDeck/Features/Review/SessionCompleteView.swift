@@ -9,21 +9,34 @@ struct SessionCompleteView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
-            Text("오늘 \(completedCount)개 완료!")
-                .font(.system(size: 34, weight: .bold))
-                .tracking(-1)
-                .foregroundStyle(Theme.text)
+            VStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 56))
+                    .foregroundStyle(Theme.green)
+                Text("오늘 \(completedCount)개 완료!")
+                    .font(.system(size: 30, weight: .bold))
+                    .tracking(-0.8)
+                    .foregroundStyle(Theme.text)
+            }
             if correctCount + wrongCount > 0 {
-                HStack(spacing: 24) {
-                    Label("정답 \(correctCount)", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.green)
-                    Label("오답 \(wrongCount)", systemImage: "xmark.circle.fill")
-                        .foregroundStyle(Theme.red)
+                HStack(spacing: 12) {
+                    statChip(
+                        label: "정답",
+                        count: correctCount,
+                        icon: "checkmark.circle.fill",
+                        color: Theme.green
+                    )
+                    statChip(
+                        label: "오답",
+                        count: wrongCount,
+                        icon: "xmark.circle.fill",
+                        color: Theme.red
+                    )
                 }
-                .font(.system(size: 17, weight: .semibold))
+                .padding(.horizontal, 32)
             }
             Text("수고하셨습니다.")
-                .font(.system(size: 17))
+                .font(.system(size: 15))
                 .foregroundStyle(Theme.secondary)
             Spacer()
             Button {
@@ -31,12 +44,37 @@ struct SessionCompleteView: View {
             } label: {
                 Text("홈으로")
                     .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: Theme.buttonRadius)
+                            .fill(Theme.accent)
+                    )
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.plain)
             .padding(.horizontal, 32)
             .padding(.bottom)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Theme.bg.ignoresSafeArea())
+    }
+
+    private func statChip(label: String, count: Int, icon: String, color: Color) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon).foregroundStyle(color)
+            Text(label).foregroundStyle(Theme.secondary)
+            Text("\(count)")
+                .fontWeight(.semibold)
+                .foregroundStyle(Theme.text)
+                .monospacedDigit()
+        }
+        .font(.system(size: 15, weight: .medium))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardRadius)
+                .fill(Theme.surface)
+        )
     }
 }

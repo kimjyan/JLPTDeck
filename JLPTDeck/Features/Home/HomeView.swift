@@ -35,25 +35,31 @@ struct HomeView: View {
                     Label("설정", systemImage: "gearshape.fill")
                 }
         }
+        .tint(Theme.accent)
     }
 
     private var mistakesTab: some View {
-        VStack {
-            Spacer()
-            Button {
-                onShowMistakes()
-            } label: {
-                VStack(spacing: 20) {
-                    Image(systemName: "exclamationmark.bubble.fill")
-                        .font(.system(size: 64))
-                        .foregroundStyle(Theme.red)
-                    Text("틀린 단어 보기").font(.headline).foregroundStyle(Theme.text)
+        NavigationStack {
+            VStack {
+                Spacer()
+                Button {
+                    onShowMistakes()
+                } label: {
+                    VStack(spacing: 20) {
+                        Image(systemName: "exclamationmark.bubble.fill")
+                            .font(.system(size: 64))
+                            .foregroundStyle(Theme.red)
+                        Text("틀린 단어 보기").font(.headline).foregroundStyle(Theme.text)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
+                .buttonStyle(.plain)
+                Spacer()
             }
-            .buttonStyle(.plain)
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Theme.bg.ignoresSafeArea())
+            .navigationTitle("틀린 단어")
         }
     }
 
@@ -65,6 +71,7 @@ struct HomeView: View {
                 if isImporting {
                     VStack(spacing: 16) {
                         ProgressView()
+                            .tint(Theme.accent)
                         Text("단어 불러오는 중...")
                             .font(.footnote)
                             .foregroundStyle(Theme.secondary)
@@ -74,37 +81,55 @@ struct HomeView: View {
                         Label("\(streak)일 연속", systemImage: "flame.fill")
                             .font(.headline)
                             .foregroundStyle(Theme.orange)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Theme.orange.opacity(0.12), in: Capsule())
                     }
 
-                    Text("오늘 학습할 카드 \(todayCount)개")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(Theme.text)
-
-                    Text("\(settings.selectedLevel.rawValue.uppercased()) · \(settings.dailyLimit)개/일")
-                        .font(.caption)
-                        .foregroundStyle(Theme.secondary)
+                    VStack(spacing: 8) {
+                        Text("오늘 학습할 카드")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Theme.secondary)
+                        Text("\(todayCount)")
+                            .font(.system(size: 72, weight: .bold))
+                            .tracking(-2)
+                            .foregroundStyle(Theme.text)
+                            .contentTransition(.numericText())
+                        Text("\(settings.selectedLevel.rawValue.uppercased()) · 하루 \(settings.dailyLimit)개")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(Theme.tertiary)
+                    }
 
                     if let errorMessage {
                         Text(errorMessage)
                             .font(.caption)
                             .foregroundStyle(Theme.red)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
                     }
 
                     Button {
                         onStartReview()
                     } label: {
                         Text("시작하기")
-                            .font(.headline)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 16)
+                            .background(
+                                RoundedRectangle(cornerRadius: Theme.buttonRadius)
+                                    .fill(todayCount == 0 ? Theme.tertiary : Theme.accent)
+                            )
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.plain)
                     .disabled(todayCount == 0)
                     .padding(.horizontal, 32)
                 }
 
                 Spacer()
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Theme.bg.ignoresSafeArea())
             .navigationTitle("JLPTDeck")
             .onAppear {
                 // Auto-import on first launch (idempotent — skips if cards exist)

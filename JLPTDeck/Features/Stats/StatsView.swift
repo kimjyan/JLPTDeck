@@ -19,51 +19,74 @@ struct StatsView: View {
                 }
                 .padding()
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.bg.ignoresSafeArea())
             .navigationTitle("통계")
             .onAppear(perform: loadStats)
         }
+        .tint(Theme.accent)
     }
 
     // MARK: - Summary
 
     private var summarySection: some View {
-        GroupBox("학습 현황") {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("학습 현황")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
             VStack(spacing: 12) {
                 statRow(label: "오늘 학습", value: "\(todayReviewedCount)장")
-                Divider()
+                Divider().background(Theme.separator)
                 statRow(label: "총 학습 카드", value: "\(totalReviewedCount)장")
-                Divider()
+                Divider().background(Theme.separator)
                 statRow(label: "정답률", value: accuracyText)
-                Divider()
+                Divider().background(Theme.separator)
                 statRow(label: "평균 ease", value: averageEaseText)
             }
-            .padding(.vertical, 4)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .fill(Theme.surface)
+            )
         }
     }
 
     // MARK: - Level Progress
 
     private var levelSection: some View {
-        GroupBox("레벨별 진행률") {
-            VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("레벨별 진행률")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
+            VStack(spacing: 14) {
                 ForEach(levelProgress, id: \.level) { item in
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text(item.level.rawValue.uppercased())
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Theme.text)
                             Spacer()
                             Text("\(item.reviewed)/\(item.total)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(Theme.secondary)
+                                .monospacedDigit()
                         }
                         ProgressView(
                             value: item.total > 0 ? Double(item.reviewed) / Double(item.total) : 0
                         )
+                        .tint(Theme.accent)
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .fill(Theme.surface)
+            )
         }
     }
 
@@ -72,10 +95,13 @@ struct StatsView: View {
     private func statRow(label: String, value: String) -> some View {
         HStack {
             Text(label)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 15))
+                .foregroundStyle(Theme.secondary)
             Spacer()
             Text(value)
-                .fontWeight(.semibold)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Theme.text)
+                .monospacedDigit()
         }
     }
 

@@ -13,6 +13,7 @@ struct MistakesView: View {
             Group {
                 if store.isLoading {
                     ProgressView()
+                        .tint(Theme.accent)
                 } else if let err = store.loadError {
                     errorState(err)
                 } else if store.cards.isEmpty {
@@ -25,16 +26,22 @@ struct MistakesView: View {
                                 lapses: store.lapseCountByID[card.id] ?? 0,
                                 lastReview: store.srsByCardID[card.id]?.lastReview
                             )
+                            .listRowBackground(Theme.surface)
+                            .listRowSeparatorTint(Theme.separator)
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Theme.bg.ignoresSafeArea())
             .navigationTitle("틀린 단어")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("닫기") { store.send(.view(.closeTapped)) }
+                        .foregroundStyle(Theme.secondary)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -45,6 +52,7 @@ struct MistakesView: View {
                 if closed { onClose() }
             }
         }
+        .tint(Theme.accent)
     }
 
     private var emptyState: some View {
@@ -75,11 +83,16 @@ struct MistakesView: View {
             store.send(.view(.reviewMistakesTapped))
         } label: {
             Text(store.cards.isEmpty ? "복습할 단어가 없어요" : "틀린 단어만 복습 (\(store.cards.count)개)")
-                .font(.headline)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.buttonRadius)
+                        .fill(store.cards.isEmpty ? Theme.tertiary : Theme.accent)
+                )
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.plain)
         .disabled(store.cards.isEmpty)
         .padding(.horizontal)
         .padding(.bottom, 8)

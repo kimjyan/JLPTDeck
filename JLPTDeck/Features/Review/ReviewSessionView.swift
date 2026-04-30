@@ -10,7 +10,6 @@ struct ReviewSessionView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Divider()
                 Group {
                     if let err = store.loadError {
                         errorState(err)
@@ -22,10 +21,8 @@ struct ReviewSessionView: View {
                         onDone: { store.send(.view(.closeTapped)) }
                     )
                     } else if let q = store.currentQuestion {
-                        VStack(spacing: 16) {
-                            Text("\(min(store.index + 1, store.queue.count)) / \(store.queue.count)")
-                                .font(.system(size: 13))
-                                .foregroundStyle(Theme.secondary)
+                        VStack(spacing: 12) {
+                            progressBar
                             QuizCardView(
                                 question: q,
                                 selectedIndex: store.selectedAnswerIndex,
@@ -44,20 +41,59 @@ struct ReviewSessionView: View {
                         }
                     } else {
                         ProgressView()
+                            .tint(Theme.accent)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .background(Theme.bg.ignoresSafeArea())
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("닫기") { store.send(.view(.closeTapped)) }
+                        .foregroundStyle(Theme.secondary)
                 }
             }
         }
+        .tint(Theme.accent)
         .task { await store.send(.view(.task(level: level, limit: dailyLimit))).finish() }
         .onChange(of: store.delegateRequestedClose) { _, requested in
             if requested { onClose() }
         }
+    }
+
+    private var progressBar: some View {
+        let total = max(store.queue.count, 1)
+        let current = min(store.index + 1, store.queue.count)
+        return VStack(spacing: 8) {
+            HStack {
+                Text("\(current) / \(total)")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Theme.secondary)
+                Spacer()
+                if store.correctCount + store.wrongCount > 0 {
+                    HStack(spacing: 10) {
+                        Label("\(store.correctCount)", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(Theme.green)
+                        Label("\(store.wrongCount)", systemImage: "xmark.circle.fill")
+                            .foregroundStyle(Theme.red)
+                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .labelStyle(.titleAndIcon)
+                }
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Theme.surface2)
+                    Capsule()
+                        .fill(Theme.accent)
+                        .frame(width: geo.size.width * CGFloat(current) / CGFloat(total))
+                        .animation(.easeInOut(duration: 0.25), value: current)
+                }
+            }
+            .frame(height: 4)
+        }
+        .padding(.horizontal)
+        .padding(.top, 8)
     }
 
     @ViewBuilder

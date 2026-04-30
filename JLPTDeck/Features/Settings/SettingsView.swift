@@ -13,27 +13,34 @@ struct SettingsView: View {
 
         NavigationStack {
             Form {
-                Section("JLPT 레벨") {
+                Section {
                     Picker("레벨", selection: $settings.selectedLevel) {
                         ForEach(JLPTLevel.allCases, id: \.self) { level in
                             Text(level.rawValue.uppercased()).tag(level)
                         }
                     }
                     .pickerStyle(.segmented)
+                } header: {
+                    Text("JLPT 레벨").foregroundStyle(Theme.secondary)
                 }
+                .listRowBackground(Theme.surface)
 
-                Section("일일 학습량") {
+                Section {
                     Stepper(
                         "\(settings.dailyLimit)장",
                         value: $settings.dailyLimit,
                         in: 10...100,
                         step: 5
                     )
+                    .foregroundStyle(Theme.text)
+                } header: {
+                    Text("일일 학습량").foregroundStyle(Theme.secondary)
                 }
+                .listRowBackground(Theme.surface)
 
-                Section("앱 정보") {
+                Section {
                     HStack {
-                        Text("버전")
+                        Text("버전").foregroundStyle(Theme.text)
                         Spacer()
                         Text(appVersion)
                             .foregroundStyle(Theme.secondary)
@@ -41,7 +48,10 @@ struct SettingsView: View {
                     Text("Data: JMdict (CC BY-SA), Tanos JLPT lists")
                         .font(.footnote)
                         .foregroundStyle(Theme.secondary)
+                } header: {
+                    Text("앱 정보").foregroundStyle(Theme.secondary)
                 }
+                .listRowBackground(Theme.surface)
 
                 Section {
                     Button(role: .destructive) {
@@ -49,12 +59,15 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Spacer()
-                            Text("데이터 초기화")
+                            Text("데이터 초기화").foregroundStyle(Theme.red)
                             Spacer()
                         }
                     }
                 }
+                .listRowBackground(Theme.surface)
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.bg.ignoresSafeArea())
             .navigationTitle("설정")
             .onDisappear {
                 settings.save()

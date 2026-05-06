@@ -31,3 +31,6 @@ Package.resolved
 .claude/cache/
 .claude/local/
 .claude/scheduled_tasks.lock
+# CP3.5 working artifacts (reproducible from source)
+CP3_5_EVIDENCE/screenshots/spotcheck*.xcresult/
+CP3_5_EVIDENCE/screenshots/extracted*/

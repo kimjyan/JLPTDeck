@@ -30,6 +30,33 @@ protocol LocalRepository {
     /// Returns VocabCards that have a SRSState with lapses > 0, paired with that SRSState.
     /// Sorted by `lastReview` descending (nil last). Filter by the given JLPT level.
     func mistakenCards(level: JLPTLevel) throws -> [(VocabCard, SRSState)]
+
+    /// F8: hide / unhide a single card. Idempotent — repeated calls with the
+    /// same value are no-ops.
+    func setHidden(cardID: UUID, hidden: Bool) throws
+
+    /// F8: returns the set of cardIDs the user has marked as hidden.
+    /// Used by the scheduler to filter `todayReviewCards`.
+    func hiddenCardIDs() throws -> Set<UUID>
+
+    /// F13: snapshot SRSState + UserOverride into the JSON-export DTO.
+    /// Caller wraps with metadata (timestamp, app version, schemaVersion).
+    func exportSnapshot() throws -> (srs: [SRSStateExport], overrides: [UserOverrideExport])
+
+    /// F13: replace SRS / UserOverride rows with the imported payload's
+    /// contents. Upsert by cardID — existing rows are overwritten, missing
+    /// ones inserted, rows not in the payload are LEFT ALONE (so a user can
+    /// restore a partial backup without wiping unrelated progress).
+    func importSnapshot(srs: [SRSStateExport], overrides: [UserOverrideExport]) throws
+
+    /// F15: record a single app-open event with the given timestamp.
+    /// Best-effort persistence — failure is non-fatal (logged via thrown error
+    /// at the call site if surfaced).
+    func recordAppOpen(at date: Date) throws
+
+    /// F15: read all app-open event dates (any order). Caller passes through
+    /// `RetentionStats.snapshot(...)` to derive D1/D7.
+    func appOpenEventDates() throws -> [Date]
 }
 
 final class SwiftDataLocalRepository: LocalRepository {
@@ -95,7 +122,18 @@ final class SwiftDataLocalRepository: LocalRepository {
             stateByCardID[state.cardID] = state
         }
 
-        return cards.map { card in
+        // F8: drop cards the user has marked as hidden. Pure helper lives in
+        // Domain so the filter logic is unit-tested without SwiftData.
+        let hidden = FeatureFlags.cardOverride
+            ? ((try? hiddenCardIDs()) ?? [])
+            : []
+        let visibleCards = HiddenCardFilter.apply(
+            cards: cards,
+            hiddenIDs: hidden,
+            idOf: { $0.id }
+        )
+
+        return visibleCards.map { card in
             (card, stateByCardID[card.id])
         }
     }
@@ -185,5 +223,109 @@ final class SwiftDataLocalRepository: LocalRepository {
             if picks.count == count { break }
         }
         return picks
+    }
+
+    func setHidden(cardID: UUID, hidden: Bool) throws {
+        let descriptor = FetchDescriptor<UserOverride>(
+            predicate: #Predicate { $0.cardID == cardID }
+        )
+        do {
+            if let existing = try modelContext.fetch(descriptor).first {
+                existing.isHidden = hidden
+            } else {
+                let row = UserOverride(cardID: cardID, isHidden: hidden)
+                modelContext.insert(row)
+            }
+            try modelContext.save()
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+    }
+
+    func hiddenCardIDs() throws -> Set<UUID> {
+        do {
+            let rows = try modelContext.fetch(FetchDescriptor<UserOverride>())
+            return Set(rows.compactMap { $0.isHidden ? $0.cardID : nil })
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+    }
+
+    func exportSnapshot() throws -> (srs: [SRSStateExport], overrides: [UserOverrideExport]) {
+        do {
+            let srs = try modelContext.fetch(FetchDescriptor<SRSState>()).map { s in
+                SRSStateExport(
+                    cardID: s.cardID,
+                    ease: s.ease,
+                    intervalDays: s.intervalDays,
+                    reps: s.reps,
+                    lapses: s.lapses,
+                    lastReviewUnix: s.lastReview?.timeIntervalSince1970,
+                    dueDateUnix: s.dueDate.timeIntervalSince1970
+                )
+            }
+            let overrides = try modelContext.fetch(FetchDescriptor<UserOverride>()).map { o in
+                UserOverrideExport(cardID: o.cardID, isHidden: o.isHidden, note: o.note)
+            }
+            return (srs, overrides)
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+    }
+
+    func recordAppOpen(at date: Date) throws {
+        do {
+            modelContext.insert(AppOpenEvent(date: date))
+            try modelContext.save()
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+    }
+
+    func appOpenEventDates() throws -> [Date] {
+        do {
+            return try modelContext.fetch(FetchDescriptor<AppOpenEvent>()).map { $0.date }
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
+    }
+
+    func importSnapshot(srs: [SRSStateExport], overrides: [UserOverrideExport]) throws {
+        do {
+            for export in srs {
+                let cardID = export.cardID
+                let descriptor = FetchDescriptor<SRSState>(
+                    predicate: #Predicate { $0.cardID == cardID }
+                )
+                let row = try modelContext.fetch(descriptor).first ?? {
+                    let fresh = SRSState(cardID: cardID)
+                    modelContext.insert(fresh)
+                    return fresh
+                }()
+                row.ease = export.ease
+                row.intervalDays = export.intervalDays
+                row.reps = export.reps
+                row.lapses = export.lapses
+                row.lastReview = export.lastReviewUnix.map { Date(timeIntervalSince1970: $0) }
+                row.dueDate = Date(timeIntervalSince1970: export.dueDateUnix)
+            }
+            for export in overrides {
+                let cardID = export.cardID
+                let descriptor = FetchDescriptor<UserOverride>(
+                    predicate: #Predicate { $0.cardID == cardID }
+                )
+                if let existing = try modelContext.fetch(descriptor).first {
+                    existing.isHidden = export.isHidden
+                    existing.note = export.note
+                } else {
+                    modelContext.insert(UserOverride(
+                        cardID: cardID, isHidden: export.isHidden, note: export.note
+                    ))
+                }
+            }
+            try modelContext.save()
+        } catch {
+            throw RepositoryError.persistenceFailure(error)
+        }
     }
 }

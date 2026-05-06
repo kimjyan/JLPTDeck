@@ -1,0 +1,68 @@
+F8 Migration Evidence
+=====================
+
+## Schema diff (v1.0 → v1.0+F8)
+
+Before:
+  Schema([VocabCard.self, SRSState.self])
+
+After:
+  Schema([VocabCard.self, SRSState.self, UserOverride.self])
+
+Existing entities (VocabCard, SRSState) UNCHANGED. Only addition is the
+new `UserOverride` `@Model` (cardID @Attribute(.unique), isHidden, note?,
+createdAt).
+
+## Automatic migration evidence
+
+SwiftData performs implicit migration when only NEW models are added to
+the schema (no fields removed, no fields renamed, no relationship changes
+on existing models). Reference:
+  https://developer.apple.com/documentation/swiftdata/preserving-your-app-s-model-data-across-launches
+
+## Active test evidence
+
+`HideCardPersistenceTests.test_migrationSmoke_v1Schema_acceptsAllModels`:
+  - Creates a fresh in-memory ModelContainer with the v1.0+F8 schema
+  - Inserts one row of EACH entity (VocabCard, SRSState, UserOverride)
+  - context.save() succeeds
+  - fetchCount returns 1 for each
+  → Schema is internally consistent and CRUD-capable
+
+This test runs in the regression suite (test_F8_rev2.txt, "passed").
+
+## Disabled test evidence (host-app deinit crash)
+
+The 2 deeper integration tests (`disabled_test_setHidden_excludesCardFromTodayReview`,
+`disabled_test_unhide_returnsCardToTodayReview`) trigger the documented
+SwiftData host-app deinit malloc crash:
+
+  JLPTDeck(13083,0x...) malloc: *** error for object 0x...:
+    pointer being freed was not allocated
+
+Same root cause as the existing disabled set:
+  - DistractorCardsTests
+  - JMdictImporterTests
+  - LocalRepositoryTests
+  - ReviewSessionFeatureTests answerTapped (correct/wrong)
+
+Per CLAUDE.md and the `defer-jlptdeck-simulator-crash` user memory, these
+fixes are NOT to be re-attempted in the v1.0 cycle. Re-enabling is part
+of L9 (post-v1.0 SwiftData test resurrection).
+
+## Real-device migration plan
+
+For the App Store / TestFlight build:
+  1. Existing TestFlight users (if any) have stores with the original
+     2-entity schema. SwiftData detects the new model on launch and
+     adds the table without touching existing data.
+  2. Failure mode: if migration fails, JLPTDeckApp.init() crashes via
+     `fatalError("Could not create ModelContainer: ...")`.
+     v1.x: graceful fallback (re-import) — see PLAN.md known limitation.
+  3. Manual smoke before submission:
+     - Build current main (pre-F8) on simulator, complete a session.
+     - Switch to F8 branch, rebuild, launch.
+     - Verify: existing SRS state intact + UserOverride is empty + hide
+       menu works + hidden card disappears from next session.
+
+(This manual smoke is part of the v1.0 release checklist, not CP2 scope.)

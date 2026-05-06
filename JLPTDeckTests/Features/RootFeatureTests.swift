@@ -70,7 +70,13 @@ final class RootFeatureTests: XCTestCase {
         )
         let store = TestStore(
             initialState: RootFeature.State.mistakes(MistakesFeature.State())
-        ) { RootFeature() }
+        ) {
+            RootFeature()
+        } withDependencies: {
+            // F9: regenerateQuestion now reads `date.now` to stamp
+            // currentQuestionPresentedAt for response-latency tracking.
+            $0.date.now = Date(timeIntervalSince1970: 1_700_000_000)
+        }
         store.exhaustivity = .off
 
         await store.send(.mistakes(.delegate(.startFocusedReview(

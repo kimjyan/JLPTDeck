@@ -16,7 +16,12 @@ extension LocalRepositoryClient: DependencyKey {
             upsertSRS: { _, _, _ in fatalError("localRepository not configured") },
             distractorCards: { _, _, _ in fatalError("localRepository not configured") },
             cardCount: { _ in fatalError("localRepository not configured") },
-            mistakenCards: { _ in fatalError("localRepository not configured") }
+            mistakenCards: { _ in fatalError("localRepository not configured") },
+            setHidden: { _, _ in fatalError("localRepository not configured") },
+            exportSnapshot: { fatalError("localRepository not configured") },
+            importSnapshot: { _, _ in fatalError("localRepository not configured") },
+            recordAppOpen: { _ in fatalError("localRepository not configured") },
+            appOpenEventDates: { fatalError("localRepository not configured") }
         )
     }
 
@@ -60,6 +65,31 @@ extension LocalRepositoryClient: DependencyKey {
                         VocabCardDTO.WithSRS(card: .init(from: pair.0), srs: pair.1.snapshot())
                     }
                 }
+            },
+            setHidden: { cardID, hidden in
+                try await _runOnMain(container) { repo in
+                    try repo.setHidden(cardID: cardID, hidden: hidden)
+                }
+            },
+            exportSnapshot: {
+                try await _runOnMain(container) { repo in
+                    try repo.exportSnapshot()
+                }
+            },
+            importSnapshot: { srs, overrides in
+                try await _runOnMain(container) { repo in
+                    try repo.importSnapshot(srs: srs, overrides: overrides)
+                }
+            },
+            recordAppOpen: { date in
+                try await _runOnMain(container) { repo in
+                    try repo.recordAppOpen(at: date)
+                }
+            },
+            appOpenEventDates: {
+                try await _runOnMain(container) { repo in
+                    try repo.appOpenEventDates()
+                }
             }
         )
     }
@@ -68,7 +98,7 @@ extension LocalRepositoryClient: DependencyKey {
 @MainActor
 private func _runOnMain<T: Sendable>(
     _ container: ModelContainer,
-    _ body: (SwiftDataLocalRepository) throws -> T
+    _ body: @MainActor (SwiftDataLocalRepository) throws -> T
 ) async throws -> T {
     let repo = SwiftDataLocalRepository(modelContext: container.mainContext)
     return try body(repo)
@@ -77,7 +107,7 @@ private func _runOnMain<T: Sendable>(
 @MainActor
 private func _runOnMainAsync<T: Sendable>(
     _ container: ModelContainer,
-    _ body: (SwiftDataLocalRepository) async throws -> T
+    _ body: @MainActor (SwiftDataLocalRepository) async throws -> T
 ) async throws -> T {
     let repo = SwiftDataLocalRepository(modelContext: container.mainContext)
     return try await body(repo)
@@ -91,7 +121,8 @@ extension VocabCardDTO {
             reading: card.reading,
             gloss: card.gloss,
             gloss_ko: card.gloss_ko,
-            jlptLevel: card.jlptLevel
+            jlptLevel: card.jlptLevel,
+            pos: card.pos
         )
     }
 }

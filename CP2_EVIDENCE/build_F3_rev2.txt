@@ -1,0 +1,20 @@
+note: Removed stale file '/Users/jaehan/Library/Developer/Xcode/DerivedData/JLPTDeck-bttltqtiiqjowiejitdfphdzlzzw/Build/Products/Debug-iphonesimulator/JLPTDeck.app/Frameworks'
+
+note: Removed stale file '/Users/jaehan/Library/Developer/Xcode/DerivedData/JLPTDeck-bttltqtiiqjowiejitdfphdzlzzw/Build/Products/Debug-iphonesimulator/JLPTDeck.app/PlugIns'
+
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/SRSQuality.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/SRSUpdate.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/SRSSnapshot.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/SM2.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/CardScheduler.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/Models/SRSState.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/Models/VocabCard.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/JMdict/JLPTLevel.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/JMdict/JMdictEntry.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/JMdict/JMdictImporter.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/Repository/RepositoryError.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Data/Repository/LocalRepository.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/FeatureFlags.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+warning: Skipping duplicate build file in Compile Sources build phase: /Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeck/Domain/SRS/RelearnPolicy.swift (in target 'JLPTDeck' from project 'JLPTDeck')
+** BUILD SUCCEEDED **
+

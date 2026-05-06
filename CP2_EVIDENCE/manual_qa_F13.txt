@@ -1,0 +1,121 @@
+F13 Manual QA Evidence — Export / Import Round-Trip
+=====================================================
+
+⚠️  EXECUTION STATUS: NOT YET EXECUTED ⚠️
+
+This file is a SCHEDULED runbook, not an execution log. The maintainer
+MUST run the §"Manual UI runbook" steps below on a real device before
+submitting v1.0 to TestFlight, then append the execution log to the
+"## Execution Log" section at the bottom of this file.
+
+Current state of automated evidence:
+  - Codec round-trip: PASS (ExportPayloadTests.test_roundTrip_preservesAllFields)
+  - SwiftData schema smoke: PASS (test_schemaSmoke_supportsAllExportEntities)
+  - Repository round-trip: BLOCKED (host-deinit malloc crash, see below)
+  - Manual UI round-trip: SCHEDULED — see runbook §below
+
+This means F13 ships v1.0 with:
+  - Verified: payload encoding/decoding, schema acceptance
+  - Manually verified before TestFlight: full UI round-trip (humans only)
+  - Long-term TODO: L9 SwiftData test resurrection enables automated repo round-trip
+
+
+
+## Why this is a runbook, not an automated assertion
+
+The reducer-side codec round-trip is fully automated:
+  ExportPayloadTests.test_roundTrip_preservesAllFields  → 98/98 green
+
+The persistence-side round-trip
+  (exportSnapshot → encode → decode → importSnapshot → exportSnapshot)
+exercises the same SwiftData fetch+save patterns that crash the host
+deinit (see CLAUDE.md / `defer-jlptdeck-simulator-crash` and the F8
+disabled tests). The crash is reproducible: every attempt to run
+`disabled_test_exportImport_roundTrip_preservesSRSAndOverrides`
+emits "JLPTDeck(...) malloc: *** error for object ...: pointer being
+freed was not allocated" at host-app deinit.
+
+Per user feedback memory, fixing this class of host crash is OUT
+OF SCOPE for v1.0. The guard is L9 (post-v1.0 SwiftData test
+resurrection).
+
+## Verification spec (= disabled test, treat as the contract)
+
+`JLPTDeckTests/Data/ExportImportPersistenceTests.swift`
+  → `disabled_test_exportImport_roundTrip_preservesSRSAndOverrides`
+
+Steps the runbook MUST execute on a real device or non-host-deinit
+simulator before the v1.0 TestFlight build is submitted:
+
+  1. Insert 2 VocabCards (cardA, cardB), save.
+  2. repo.upsertSRS(cardA.id, ease=2.5, intervalDays=1, reps=1, lapses=0, ...)
+  3. repo.setHidden(cardB.id, true)
+  4. snap1 = repo.exportSnapshot()
+     EXPECT: snap1.srs.count == 1, snap1.overrides.count == 1
+  5. payload = ExportPayload(schemaVersion: 1, ..., snap1.srs, snap1.overrides)
+     encoded = ExportPayloadCodec.encode(payload)
+     decoded = ExportPayloadCodec.decode(encoded)
+     EXPECT: decoded == payload (Equatable)
+  6. wipe SRSState + UserOverride (modelContext.delete(model:))
+  7. repo.importSnapshot(srs: decoded.srsStates, overrides: decoded.userOverrides)
+  8. snap2 = repo.exportSnapshot()
+     EXPECT: snap2.srs.count == 1, snap2.srs.first.cardID == cardA.id
+              snap2.srs.first.ease == 2.5
+              snap2.srs.first.intervalDays == 1
+              snap2.srs.first.reps == 1
+     EXPECT: snap2.overrides.count == 1, snap2.overrides.first.cardID == cardB.id
+              snap2.overrides.first.isHidden == true
+
+## Manual UI runbook (TestFlight pre-submission)
+
+Required before v1.0 ships, executed on a physical device (iPhone 17
+simulator on this build host crashes via the documented deinit issue
+when test infrastructure exits — direct app run does NOT crash):
+
+  1. Fresh install.
+  2. Complete 5-card review session (mix correct/wrong answers).
+     → SRSState rows = 5
+  3. Open a card, tap "이 카드 숨기기" on 1 card.
+     → UserOverride rows >= 1
+  4. Settings → "백업 내보내기" → save jlptdeck-backup-XXXX.json to Files.
+  5. Open the saved file in any plain-text reader. Confirm:
+     - schemaVersion: 1
+     - srsStates: array length matches step 2 (5 entries)
+     - userOverrides: array length matches step 3 (1 entry)
+     - Each srsStates entry has: cardID, ease, intervalDays, reps, lapses,
+       lastReviewUnix (or null), dueDateUnix
+  6. Settings → "데이터 초기화" → confirm.
+     → SRSState rows = 0
+  7. Settings → "백업 가져오기" → select the JSON.
+     → Alert: "가져오기 완료: SRS 5건, 숨김 1건"
+  8. Open Stats tab → SRSState count returns to 5.
+  9. Open Review tab → the hidden card from step 3 is still hidden.
+ 10. Verify the SAME cardIDs appear in step 8 by inspecting card
+     headwords (hidden card from step 3 should not be in today's queue).
+
+## Status
+
+  Codec round-trip          : automated, 98/98 green
+  Schema-only smoke          : automated, ExportImportPersistenceTests
+                                .test_schemaSmoke_supportsAllExportEntities
+  Repository round-trip      : DEFERRED to L9 (host crash) — runbook above
+  Manual UI round-trip       : SCHEDULED for pre-TestFlight checklist
+  schemaVersion mismatch UX  : automated UI alert path inspected manually
+                                (no automated UI test in v1.0)
+
+## Execution Log
+
+  (empty — to be filled by the maintainer before TestFlight submission)
+
+  Format:
+    ----
+    Date: YYYY-MM-DD HH:MM TZ
+    Device: e.g. "iPhone 15 Pro, iOS 18.2"  (or sim name + version)
+    Build: git SHA
+    Steps 1-10 results:
+      Step 1: ✓
+      Step 2: ✓ — SRSState rows = 5
+      ... etc
+    Discrepancies: (none | list)
+    Verdict: PASS | FAIL → if FAIL, file Issue #N
+    ----

@@ -9,6 +9,27 @@ struct VocabCardDTO: Equatable, Sendable, Identifiable {
     let gloss: String
     let gloss_ko: String
     let jlptLevel: String
+    /// F12 (G-CardView): JMdict part-of-speech token (e.g., "動詞").
+    /// nil means "not classified" — the view hides the row.
+    let pos: String?
+
+    init(
+        id: UUID,
+        headword: String,
+        reading: String,
+        gloss: String,
+        gloss_ko: String,
+        jlptLevel: String,
+        pos: String? = nil
+    ) {
+        self.id = id
+        self.headword = headword
+        self.reading = reading
+        self.gloss = gloss
+        self.gloss_ko = gloss_ko
+        self.jlptLevel = jlptLevel
+        self.pos = pos
+    }
 
     /// Paired snapshot for review: card + its current SRS state (nil = new card).
     /// `@unchecked Sendable` because `SRSSnapshot` lives in Domain and is a pure

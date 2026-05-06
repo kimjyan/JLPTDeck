@@ -9,12 +9,22 @@ public enum QuizGenerator {
         public let headword: String
         public let reading: String
         public let glossKo: String
+        /// F12: forwarded into the resulting `QuizQuestion.pos`. nil = no
+        /// part-of-speech tag available for this card.
+        public let pos: String?
 
-        public init(cardID: UUID, headword: String, reading: String, glossKo: String) {
+        public init(
+            cardID: UUID,
+            headword: String,
+            reading: String,
+            glossKo: String,
+            pos: String? = nil
+        ) {
             self.cardID = cardID
             self.headword = headword
             self.reading = reading
             self.glossKo = glossKo
+            self.pos = pos
         }
     }
 
@@ -41,7 +51,8 @@ public enum QuizGenerator {
             prompt: input.headword,
             reading: input.reading,
             choices: choices,
-            correctIndex: correctIndex
+            correctIndex: correctIndex,
+            pos: input.pos
         )
     }
 }

@@ -1,0 +1,16 @@
+=== Run 1 ===
+2026-05-06 15:37:30.038 appintentsmetadataprocessor[90354:14073995] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-05-06 15:37:30.341 appintentsmetadataprocessor[90357:14074018] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-05-06 15:37:30.606 appintentsmetadataprocessor[90366:14074079] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+=== Run 2 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (10.828 seconds).
+** TEST SUCCEEDED **
+=== Run 3 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (18.064 seconds).
+** TEST SUCCEEDED **
+=== Run 4 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (11.124 seconds).
+** TEST SUCCEEDED **
+=== Run 5 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (10.965 seconds).
+** TEST SUCCEEDED **

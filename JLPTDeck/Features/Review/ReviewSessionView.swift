@@ -6,6 +6,9 @@ struct ReviewSessionView: View {
     let level: JLPTLevel
     let dailyLimit: Int
     var onClose: () -> Void
+    /// F9 rev2: forwarded to reducer so background-suspended time is
+    /// excluded from response-latency measurement.
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -16,8 +19,14 @@ struct ReviewSessionView: View {
                     } else if store.isComplete {
                         SessionCompleteView(
                         completedCount: store.queue.count,
-                        correctCount: store.correctCount,
-                        wrongCount: store.wrongCount,
+                        firstAttemptCorrect: store.correctCount,
+                        firstAttemptWrong: store.wrongCount,
+                        relearnedCount: store.relearnedCount,
+                        failedUpsertCount: store.failedUpsertCount,
+                        hideFailedCount: store.hideFailedCount,
+                        slowFirstAttemptCount: store.slowFirstAttemptIDs.count,
+                        nextDayDueCount: store.nextDayDueCount,
+                        streakAfterToday: store.streakAfterToday,
                         onDone: { store.send(.view(.closeTapped)) }
                     )
                     } else if let q = store.currentQuestion {
@@ -34,6 +43,9 @@ struct ReviewSessionView: View {
                                     } else {
                                         HapticsManager.error()
                                     }
+                                },
+                                onHideCard: {
+                                    store.send(.view(.hideCurrentCardTapped))
                                 }
                             )
                             .padding(.horizontal)
@@ -58,6 +70,13 @@ struct ReviewSessionView: View {
         .task { await store.send(.view(.task(level: level, limit: dailyLimit))).finish() }
         .onChange(of: store.delegateRequestedClose) { _, requested in
             if requested { onClose() }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // F9 rev2: clear the latency timestamp when leaving foreground
+            // so background-suspended time isn't counted as user thinking.
+            if phase != .active {
+                store.send(.view(.scenePhaseBackgrounded))
+            }
         }
     }
 

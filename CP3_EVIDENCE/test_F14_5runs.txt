@@ -1,0 +1,18 @@
+=== Run 1 ===
+2026-05-06 15:34:57.583 appintentsmetadataprocessor[89348:14065268] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (14.476 seconds).
+** TEST SUCCEEDED **
+=== Run 2 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (13.949 seconds).
+** TEST SUCCEEDED **
+=== Run 3 ===
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' passed (13.555 seconds).
+** TEST SUCCEEDED **
+=== Run 4 ===
+/Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeckUITests/JLPTDeckUITests.swift:59: -[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete] : Test skipped - today count is 0 — start button disabled. Smoke skipped.
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' skipped (3.862 seconds).
+	 Executed 1 test, with 1 test skipped and 0 failures (0 unexpected) in 3.862 (3.863) seconds
+=== Run 5 ===
+/Users/jaehan/NoneiCloud/JLPTDeck/JLPTDeckUITests/JLPTDeckUITests.swift:59: -[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete] : Test skipped - today count is 0 — start button disabled. Smoke skipped.
+Test Case '-[JLPTDeckUITests.JLPTDeckUITests test_smoke_homeToSessionComplete]' skipped (3.749 seconds).
+	 Executed 1 test, with 1 test skipped and 0 failures (0 unexpected) in 3.749 (3.749) seconds

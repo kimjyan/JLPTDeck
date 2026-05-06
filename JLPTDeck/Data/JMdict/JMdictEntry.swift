@@ -11,9 +11,12 @@ struct JMdictEntry: Codable, Equatable {
     let gloss: String
     let gloss_ko: String
     let jlptLevel: JLPTLevel
+    /// F12: optional part-of-speech tag (e.g., "動詞"). Decode-tolerant so
+    /// existing bundled JSONs without `pos` still parse.
+    let pos: String?
 
     enum CodingKeys: String, CodingKey {
-        case headword, reading, gloss, gloss_ko, jlptLevel
+        case headword, reading, gloss, gloss_ko, jlptLevel, pos
     }
 
     init(
@@ -21,13 +24,15 @@ struct JMdictEntry: Codable, Equatable {
         reading: String,
         gloss: String,
         gloss_ko: String,
-        jlptLevel: JLPTLevel
+        jlptLevel: JLPTLevel,
+        pos: String? = nil
     ) {
         self.headword = headword
         self.reading = reading
         self.gloss = gloss
         self.gloss_ko = gloss_ko
         self.jlptLevel = jlptLevel
+        self.pos = pos
     }
 
     init(from decoder: Decoder) throws {
@@ -38,5 +43,6 @@ struct JMdictEntry: Codable, Equatable {
         // Decode-fault-tolerant: bundled JSON may not yet have this key.
         self.gloss_ko = try container.decodeIfPresent(String.self, forKey: .gloss_ko) ?? ""
         self.jlptLevel = try container.decode(JLPTLevel.self, forKey: .jlptLevel)
+        self.pos = try container.decodeIfPresent(String.self, forKey: .pos)
     }
 }

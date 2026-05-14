@@ -54,12 +54,22 @@ AppStore/
 3. Xcode → Assets.xcassets → AppIcon → 슬롯 3곳에 PNG 드래그
 4. 빌드 후 시뮬레이터 홈 화면 / TestFlight 빌드 thumbnail 확인
 
-### D. TestFlight Tester Notes (베타용)
-`docs/beta-data-sop.md` §2 "베타 사용자에게 보낼 안내문" 본문 그대로 복사 →
-TestFlight Tester Notes에 붙여넣기.
+### D. 베타 배포 채널 — Firebase App Distribution (권장) 또는 TestFlight
 
-**선결 조건**: `docs/beta-data-sop.md`의 `<maintainer-email-here>` 토큰을 실제
-이메일로 치환 (PLAN.md G3, CP2 deadlock 인간 결정 H1+H2).
+**Firebase App Distribution (권장, 1차 배포)**:
+- 셋업 가이드: `docs/deployment-firebase.md`
+- Apple 심사 우회, 즉시 발송, UDID 수집 기간 동안 ~30명 단계적 배포
+- 외부 SDK 통합 없음 (FINAL §3 외부 송신 0 원칙 유지)
+- 명령: `bundle exec fastlane beta`
+- 초대 메일 본문에 `docs/beta-data-sop.md` §2 안내문 포함
+
+**TestFlight (2차 배포, 일반 공개 전)**:
+- App Store Connect → TestFlight 빌드 업로드
+- Tester Notes에 `docs/beta-data-sop.md` §2 본문 그대로 복사
+
+**선결 조건** (양 채널 공통):
+- `docs/beta-data-sop.md`의 `<maintainer-email-here>` 토큰을 실제 이메일로
+  치환 (PLAN.md G3, CP2 deadlock 인간 결정 H1+H2)
 
 ### E. git tag v1.0.0
 TestFlight 빌드 업로드 + App Store Connect 메타데이터 입력 + 7개 게이트

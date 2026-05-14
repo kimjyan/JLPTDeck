@@ -34,3 +34,14 @@ Package.resolved
 # CP3.5 working artifacts (reproducible from source)
 CP3_5_EVIDENCE/screenshots/spotcheck*.xcresult/
 CP3_5_EVIDENCE/screenshots/extracted*/
+
+# Firebase / fastlane distribution
+firebase-service-account*.json
+firebase-debug.log
+.firebase/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output/
+fastlane/screenshots/
+fastlane/README.md
+build/fastlane/

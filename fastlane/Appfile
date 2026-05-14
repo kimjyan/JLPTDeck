@@ -1,0 +1,12 @@
+# Fastlane app-level identity. Apple-side identifiers are inert until
+# the maintainer fills in `apple_id` and `team_id` (placeholders below).
+# Firebase identifiers live in `.env` (per-machine secret) and in CI
+# secrets — never committed.
+
+app_identifier "com.jay.ustock.JLPTDeck"
+
+# Optional — fill these in (or export APPLE_ID / FASTLANE_TEAM_ID) to
+# enable Apple-side actions (e.g. `pilot` for TestFlight). For Firebase
+# App Distribution alone these are NOT required.
+# apple_id "<your-apple-id-email>"
+# team_id  "<your-apple-team-id>"

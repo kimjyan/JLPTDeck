@@ -1,0 +1,112 @@
+# JLPTDeck — fastlane distribution lanes
+#
+# Distribution policy (FINAL.md §3 / CLAUDE.md "외부 송신 0"):
+# We use Firebase App Distribution as a host for the signed IPA + a
+# tester notification channel. We do NOT integrate the Firebase iOS
+# SDK in the app target. The app binary makes zero network calls.
+# Only the build artifact + release notes leave the maintainer's
+# machine (or CI runner) and reach Firebase's CDN.
+#
+# Lanes:
+#   bundle exec fastlane build_release  — archive + export IPA only
+#   bundle exec fastlane beta           — build + upload to Firebase
+#   bundle exec fastlane beta_existing_ipa ipa_path:./out/JLPTDeck.ipa
+#                                       — skip build, upload an already-
+#                                         signed IPA (CI artifact handoff)
+
+default_platform(:ios)
+
+SCHEME      = "JLPTDeck"
+WORKSPACE   = nil                  # project-only, no .xcworkspace
+PROJECT     = "JLPTDeck.xcodeproj"
+OUTPUT_DIR  = "build/fastlane"
+IPA_NAME    = "JLPTDeck.ipa"
+
+platform :ios do
+
+  desc "Archive + export an ad-hoc signed IPA. Requires Apple Distribution cert."
+  lane :build_release do
+    UI.message("Building IPA → #{OUTPUT_DIR}/#{IPA_NAME}")
+
+    build_app(
+      project: PROJECT,
+      scheme: SCHEME,
+      configuration: "Release",
+      output_directory: OUTPUT_DIR,
+      output_name: IPA_NAME,
+      export_method: ENV.fetch("EXPORT_METHOD", "ad-hoc"),
+      clean: true,
+      include_bitcode: false,
+      include_symbols: true,
+      # CI runners typically use `match` or an `xcrun automaticSigning`
+      # pre-step. For local/manual builds, fall back to manual signing
+      # if the developer has set CODE_SIGN_IDENTITY in their env.
+      skip_profile_detection: false,
+      xcargs: "-skipMacroValidation",
+    )
+  end
+
+  desc "Build + upload to Firebase App Distribution"
+  lane :beta do |options|
+    build_release
+    upload_to_firebase(ipa_path: lane_context[SharedValues::IPA_OUTPUT_PATH])
+  end
+
+  desc "Upload an already-built IPA to Firebase (skip build)"
+  lane :beta_existing_ipa do |options|
+    ipa = options[:ipa_path] || ENV["IPA_PATH"]
+    UI.user_error!("Pass ipa_path:./path/to/JLPTDeck.ipa or set IPA_PATH") if ipa.nil?
+    UI.user_error!("IPA not found: #{ipa}") unless File.exist?(ipa)
+    upload_to_firebase(ipa_path: ipa)
+  end
+
+  # ---- private helpers ----
+
+  private_lane :upload_to_firebase do |options|
+    app_id = ENV.fetch("FIREBASE_APP_ID") do
+      UI.user_error!(
+        "FIREBASE_APP_ID is not set. Export it (1:XXX:ios:YYY format)\n" \
+        "or copy `.env.example` to `.env`. See docs/deployment-firebase.md §1."
+      )
+    end
+
+    # Auth: prefer service account JSON (CI) over interactive firebase
+    # login (local). Either path works without modifying the lane.
+    service_account = ENV["GOOGLE_APPLICATION_CREDENTIALS"]
+    cli_token       = ENV["FIREBASE_TOKEN"]
+    auth_args = {}
+    if service_account && !service_account.empty?
+      UI.message("Auth: service account JSON (#{service_account})")
+      auth_args[:service_credentials_file] = service_account
+    elsif cli_token && !cli_token.empty?
+      UI.message("Auth: FIREBASE_TOKEN (CLI session token)")
+      auth_args[:firebase_cli_token] = cli_token
+    else
+      UI.message("Auth: interactive (run `firebase login` first)")
+    end
+
+    release_notes = options[:release_notes] || ENV["RELEASE_NOTES"] || default_release_notes
+
+    firebase_app_distribution(
+      app: app_id,
+      ipa_path: options[:ipa_path],
+      release_notes: release_notes,
+      groups: ENV.fetch("FIREBASE_TESTER_GROUPS", "beta-testers"),
+      # `testers` accepts comma-separated emails if a group is not used.
+      testers: ENV["FIREBASE_TESTER_EMAILS"],
+      **auth_args
+    )
+  end
+
+  # Default release notes pull from `AppStore/ko/release_notes_v1.0.0.txt`
+  # if present, otherwise a one-liner with the commit hash.
+  def default_release_notes
+    path = File.expand_path("../AppStore/ko/release_notes_v1.0.0.txt", __dir__)
+    if File.exist?(path)
+      File.read(path).strip
+    else
+      sha = `git rev-parse --short HEAD`.strip
+      "JLPTDeck beta @ #{sha}"
+    end
+  end
+end

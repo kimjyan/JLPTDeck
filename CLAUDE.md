@@ -140,3 +140,22 @@ launch arg `-uitest_force_light/dark`로 색상 모드 강제. xcresult attachme
 - `AppStore/` — App Store Connect 입력 자료 (메타데이터 + 스크린샷 5장)
 - `docs/beta-data-sop.md` — 베타 회수 SOP (메인테이너 이메일 토큰 치환 필요)
 - `docs/finishing-debt.md` — F18 (UI-B) 정체 메모 + spot check 결과
+- `docs/deployment-firebase.md` — Firebase App Distribution 베타 배포 가이드
+
+## 배포 (Firebase App Distribution)
+**중요**: 외부 송신 0 원칙 유지 — Firebase SDK 통합 X, IPA 호스팅 + 알림만.
+
+```bash
+# 1회 셋업
+bundle install --path vendor/bundle
+cp .env.example .env  # → FIREBASE_APP_ID 등 입력
+
+# 배포 (빌드 + 업로드 + 테스터 알림)
+bundle exec fastlane beta
+
+# 이미 빌드된 IPA만 업로드
+bundle exec fastlane beta_existing_ipa ipa_path:./build/fastlane/JLPTDeck.ipa
+```
+
+GitHub Actions: `.github/workflows/firebase-distribute.yml` (수동 trigger).
+세부 가이드는 `docs/deployment-firebase.md`.

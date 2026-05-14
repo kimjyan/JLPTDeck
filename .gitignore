@@ -39,6 +39,10 @@ CP3_5_EVIDENCE/screenshots/extracted*/
 firebase-service-account*.json
 firebase-debug.log
 .firebase/
+# GoogleService-Info.plist contains API_KEY + project credentials.
+# Per FINAL.md §3 (외부 송신 0) we do not bundle this into the app.
+# Keep the file locally for SDK-integration optionality but never commit.
+GoogleService-Info.plist
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/test_output/

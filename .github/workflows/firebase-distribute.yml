@@ -54,6 +54,9 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> $GITHUB_ENV
 
       # Restore Apple Distribution cert + provisioning profile.
+      # Diagnostic mode: each substep guards with a clear message so the
+      # workflow log pinpoints which secret / decode / import step
+      # actually failed.
       - name: Install Apple signing assets
         env:
           DIST_CERT_BASE64: ${{ secrets.APPLE_DIST_CERT_BASE64 }}
@@ -62,26 +65,72 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Create a temporary keychain isolated from the runner default.
+          # ---- 1. Verify secrets exist (length-only, no value leak) ----
+          if [ -z "$DIST_CERT_BASE64" ]; then
+            echo "::error::APPLE_DIST_CERT_BASE64 secret is empty or unset"
+            exit 1
+          fi
+          if [ -z "$DIST_CERT_PASSWORD" ]; then
+            echo "::error::APPLE_DIST_CERT_PASSWORD secret is empty or unset"
+            exit 1
+          fi
+          if [ -z "$PROFILE_BASE64" ]; then
+            echo "::error::APPLE_PROVISIONING_PROFILE_BASE64 secret is empty or unset"
+            exit 1
+          fi
+          echo "secret lengths: cert=${#DIST_CERT_BASE64}, pwd=${#DIST_CERT_PASSWORD}, profile=${#PROFILE_BASE64}"
+
+          # ---- 2. Decode base64 (strip whitespace defensively — macOS
+          # base64 wraps at 76 cols by default, and that survives copy
+          # into GitHub secrets) ----
+          echo "$DIST_CERT_BASE64" | tr -d '[:space:]' | base64 --decode > $RUNNER_TEMP/dist.p12
+          echo "$PROFILE_BASE64" | tr -d '[:space:]' | base64 --decode > $RUNNER_TEMP/profile.mobileprovision
+
+          ls -l $RUNNER_TEMP/dist.p12 $RUNNER_TEMP/profile.mobileprovision
+          file $RUNNER_TEMP/dist.p12
+          file $RUNNER_TEMP/profile.mobileprovision
+
+          # Sanity — a valid .p12 starts with the ASN.1 SEQUENCE bytes 30 82
+          head -c 4 $RUNNER_TEMP/dist.p12 | xxd | head -1
+          if ! head -c 2 $RUNNER_TEMP/dist.p12 | xxd | grep -q '^00000000: 3082'; then
+            echo "::error::Decoded .p12 does not look like ASN.1 (wrong base64? cert without private key? exported as .cer instead of .p12?)"
+            exit 1
+          fi
+
+          # ---- 3. Create + unlock temp keychain ----
           KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
           KEYCHAIN_PASSWORD=$(uuidgen)
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
-          # Import the .p12 distribution cert.
-          echo "$DIST_CERT_BASE64" | base64 --decode > $RUNNER_TEMP/dist.p12
-          security import $RUNNER_TEMP/dist.p12 -k "$KEYCHAIN_PATH" \
-            -P "$DIST_CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          # ---- 4. Import .p12 with verbose error capture ----
+          # Common failure: wrong password → "MAC verification failed",
+          # not "parameters invalid". "parameters invalid" usually means
+          # bad ASN.1 = bad base64 OR exported a .cer instead of .p12.
+          if ! security import $RUNNER_TEMP/dist.p12 \
+               -k "$KEYCHAIN_PATH" \
+               -P "$DIST_CERT_PASSWORD" \
+               -A \
+               -t cert -f pkcs12 \
+               -T /usr/bin/codesign -T /usr/bin/security 2>&1; then
+            echo "::error::security import failed. Re-export the .p12 from Keychain Access selecting BOTH the Apple Distribution certificate AND its private key, then base64 via: base64 -i dist.p12 | tr -d '\n' | pbcopy"
+            exit 1
+          fi
+
           security set-key-partition-list -S apple-tool:,apple: \
             -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH" \
             $(security list-keychains -d user | sed s/\"//g | xargs)
 
-          # Install the provisioning profile.
+          # Show installed identities (one-liner — does not leak the key)
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          # ---- 5. Install provisioning profile ----
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PROFILE_BASE64" | base64 --decode \
-            > "$HOME/Library/MobileDevice/Provisioning Profiles/jlptdeck-adhoc.mobileprovision"
+          cp $RUNNER_TEMP/profile.mobileprovision \
+            "$HOME/Library/MobileDevice/Provisioning Profiles/jlptdeck-adhoc.mobileprovision"
+          echo "Provisioning profile installed."
 
       - name: Distribute via fastlane
         run: bundle exec fastlane beta

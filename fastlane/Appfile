@@ -3,7 +3,7 @@
 # Firebase identifiers live in `.env` (per-machine secret) and in CI
 # secrets — never committed.
 
-app_identifier "com.jay.ustock.JLPTDeck"
+app_identifier "com.jay.JLPTDeck"
 
 # Optional — fill these in (or export APPLE_ID / FASTLANE_TEAM_ID) to
 # enable Apple-side actions (e.g. `pilot` for TestFlight). For Firebase

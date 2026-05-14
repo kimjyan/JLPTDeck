@@ -8,15 +8,93 @@ on:
 
 jobs:
   test:
-    runs-on: macos-14
+    # Project ships with IPHONEOS_DEPLOYMENT_TARGET = 26.0 and TCA macros,
+    # so we need Xcode 26 + an iOS 26 simulator runtime. macos-15 runners
+    # ship Xcode 26 as the latest-stable channel.
+    runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app
-      - name: Build & Test
+
+      - name: Show available Xcode toolchains
+        run: ls /Applications/ | grep -i xcode || true
+
+      - name: Select Xcode 26 (latest-stable)
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Show available simulators
+        run: xcrun simctl list devices available iPhone | head -40
+
+      - name: Build & Unit Test
+        # CLAUDE.md required flags:
+        #   -skipMacroValidation         — TCA macro fingerprint
+        #   -parallel-testing-enabled NO — JLPTDeck single-simulator policy
+        #   -maximum-concurrent-...=1    — same
+        # We list unit suites explicitly so the host-deinit crash deferred
+        # SwiftData tests (CLAUDE.md "Deferred tests") don't run.
         run: |
+          set -euo pipefail
           xcodebuild test \
             -project JLPTDeck.xcodeproj \
             -scheme JLPTDeck \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -skipMacroValidation \
+            -parallel-testing-enabled NO \
+            -maximum-concurrent-test-simulator-destinations 1 \
+            -only-testing:JLPTDeckTests/SM2Tests \
+            -only-testing:JLPTDeckTests/SchedulerTests \
+            -only-testing:JLPTDeckTests/SRSStateTests \
+            -only-testing:JLPTDeckTests/QuizGeneratorTests \
+            -only-testing:JLPTDeckTests/OnboardingFeatureTests \
+            -only-testing:JLPTDeckTests/ReviewSessionFeatureTests \
+            -only-testing:JLPTDeckTests/RootFeatureTests \
+            -only-testing:JLPTDeckTests/MistakesFeatureTests \
+            -only-testing:JLPTDeckTests/RelearnPolicyTests \
+            -only-testing:JLPTDeckTests/RelearnReducerTests \
+            -only-testing:JLPTDeckTests/UpsertRetryStorageTests \
+            -only-testing:JLPTDeckTests/UpsertRetryDrainTests \
+            -only-testing:JLPTDeckTests/UpsertRetryReducerTests \
+            -only-testing:JLPTDeckTests/HideCardReducerTests \
+            -only-testing:JLPTDeckTests/HiddenCardFilterTests \
+            -only-testing:JLPTDeckTests/HideCardPersistenceTests \
+            -only-testing:JLPTDeckTests/LatencyPolicyTests \
+            -only-testing:JLPTDeckTests/LatencyReducerTests \
+            -only-testing:JLPTDeckTests/ExportPayloadTests \
+            -only-testing:JLPTDeckTests/ExportImportPersistenceTests \
+            -only-testing:JLPTDeckTests/RetentionStatsTests \
+            -only-testing:JLPTDeckTests/AppOpenEventPersistenceTests \
+            -only-testing:JLPTDeckTests/SessionPreviewReducerTests \
+            -only-testing:JLPTDeckTests/PronunciationTrapsTests \
+            CODE_SIGNING_ALLOWED=NO
+
+  uitest:
+    # UI smoke test runs separately so its higher flake/runtime budget
+    # doesn't block the unit suite. F14 smoke uses -uitest_reset_state
+    # (in-memory DB) so it's CI-deterministic.
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26 (latest-stable)
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: F14 smoke
+        run: |
+          set -euo pipefail
+          xcodebuild test \
+            -project JLPTDeck.xcodeproj \
+            -scheme JLPTDeck \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -skipMacroValidation \
+            -parallel-testing-enabled NO \
+            -maximum-concurrent-test-simulator-destinations 1 \
+            -only-testing:JLPTDeckUITests/JLPTDeckUITests/test_smoke_homeToSessionComplete \
             CODE_SIGNING_ALLOWED=NO

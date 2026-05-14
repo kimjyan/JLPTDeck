@@ -86,4 +86,97 @@ final class SchedulerTests: XCTestCase {
         XCTAssertEqual(picked, [pastID, newID])
         XCTAssertFalse(picked.contains(futureID))
     }
+
+    // MARK: - Daily-limit cap (bug fix)
+
+    // The daily limit MUST be a calendar-day cap. If the user already
+    // reviewed N cards today, a second session on the same day must
+    // pick at most (limit - N) new cards — not another full batch of
+    // `limit`.
+    func testAlreadyReviewedTodaySubtractsFromQuota() {
+        // 20 new cards available, limit=20, already-reviewed=20 → 0 picks.
+        let newIDs = (0..<20).map { _ in UUID() }
+        let picked = CardScheduler.pickToday(
+            due: [], newCardIDs: newIDs, limit: 20, now: now,
+            alreadyReviewedToday: 20
+        )
+        XCTAssertEqual(picked.count, 0,
+                       "Daily quota already hit → no new picks even if pool is non-empty")
+    }
+
+    func testPartialQuotaUsedSoFar() {
+        // 12 already done, limit=20 → 8 remaining.
+        let newIDs = (0..<50).map { _ in UUID() }
+        let picked = CardScheduler.pickToday(
+            due: [], newCardIDs: newIDs, limit: 20, now: now,
+            alreadyReviewedToday: 12
+        )
+        XCTAssertEqual(picked.count, 8)
+    }
+
+    func testAlreadyReviewedExceedsLimitClampsAtZero() {
+        // Defensive: if for some reason `alreadyReviewedToday` > limit
+        // (e.g., user lowered dailyLimit mid-day), we clamp to 0, not
+        // a negative slice.
+        let newIDs = (0..<5).map { _ in UUID() }
+        let picked = CardScheduler.pickToday(
+            due: [], newCardIDs: newIDs, limit: 10, now: now,
+            alreadyReviewedToday: 99
+        )
+        XCTAssertEqual(picked.count, 0)
+    }
+
+    func testReviewedTodayCount_sameCalendarDay_isCounted() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: now)
+        let states = [
+            dueSnapshot(offset: 86_400),             // lastReview = `now` (today)
+            dueSnapshot(offset: 86_400),             // same
+        ]
+        let count = CardScheduler.reviewedTodayCount(
+            states: states, now: today.addingTimeInterval(3600), calendar: cal
+        )
+        XCTAssertEqual(count, 2)
+    }
+
+    func testReviewedTodayCount_yesterday_isNotCounted() {
+        let cal = Calendar.current
+        let yesterday = cal.date(byAdding: .day, value: -1, to: now)!
+        let snap = SRSSnapshot(
+            cardID: UUID(), ease: 2.5, intervalDays: 1, reps: 1, lapses: 0,
+            lastReview: yesterday,
+            dueDate: now.addingTimeInterval(86_400)
+        )
+        let count = CardScheduler.reviewedTodayCount(
+            states: [snap], now: now, calendar: cal
+        )
+        XCTAssertEqual(count, 0)
+    }
+
+    func testReviewedTodayCount_nilLastReview_isNotCounted() {
+        let snap = SRSSnapshot(
+            cardID: UUID(), ease: 2.5, intervalDays: 0, reps: 0, lapses: 0,
+            lastReview: nil,
+            dueDate: now
+        )
+        let count = CardScheduler.reviewedTodayCount(
+            states: [snap], now: now
+        )
+        XCTAssertEqual(count, 0)
+    }
+
+    // Default arg backward-compat: existing call sites without
+    // `alreadyReviewedToday:` continue to behave as before (no cap).
+    func testDefaultArgBackwardCompat() {
+        let newIDs = (0..<5).map { _ in UUID() }
+        let pickedNoArg = CardScheduler.pickToday(
+            due: [], newCardIDs: newIDs, limit: 5, now: now
+        )
+        let pickedExplicit = CardScheduler.pickToday(
+            due: [], newCardIDs: newIDs, limit: 5, now: now,
+            alreadyReviewedToday: 0
+        )
+        XCTAssertEqual(pickedNoArg, pickedExplicit)
+        XCTAssertEqual(pickedNoArg.count, 5)
+    }
 }

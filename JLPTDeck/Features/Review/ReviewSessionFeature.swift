@@ -512,7 +512,19 @@ struct ReviewSessionFeature {
                         newIDs.append(pair.card.id)
                     }
                 }
-                let pickedIDs = CardScheduler.pickToday(due: due, newCardIDs: newIDs, limit: limit, now: nowSnapshot)
+                // Daily-limit cap: subtract cards already reviewed today
+                // so a second session on the same calendar day does NOT
+                // pick another full batch of `limit` new cards.
+                let alreadyToday = CardScheduler.reviewedTodayCount(
+                    states: due, now: nowSnapshot
+                )
+                let pickedIDs = CardScheduler.pickToday(
+                    due: due,
+                    newCardIDs: newIDs,
+                    limit: limit,
+                    now: nowSnapshot,
+                    alreadyReviewedToday: alreadyToday
+                )
                 let queue = pickedIDs.compactMap { byID[$0] }
 
                 let distractors = try await repo.distractorCards(level, UUID(), max(20, limit * 4))

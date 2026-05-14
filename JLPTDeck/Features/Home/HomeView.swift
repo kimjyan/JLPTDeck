@@ -162,19 +162,26 @@ struct HomeView: View {
                 now: now
             )
             var due: [SRSSnapshot] = []
+            var allStates: [SRSSnapshot] = []
             var newIDs: [UUID] = []
             for (card, state) in pairs {
                 if let state {
-                    due.append(state.snapshot())
+                    let snap = state.snapshot()
+                    due.append(snap)
+                    allStates.append(snap)
                 } else {
                     newIDs.append(card.id)
                 }
             }
+            let alreadyToday = CardScheduler.reviewedTodayCount(
+                states: allStates, now: now
+            )
             let picks = CardScheduler.pickToday(
                 due: due,
                 newCardIDs: newIDs,
                 limit: settings.dailyLimit,
-                now: now
+                now: now,
+                alreadyReviewedToday: alreadyToday
             )
             todayCount = picks.count
             errorMessage = nil

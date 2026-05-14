@@ -518,9 +518,15 @@ struct ReviewSessionFeature {
                 let alreadyToday = CardScheduler.reviewedTodayCount(
                     states: due, now: nowSnapshot
                 )
+                // Per-session shuffle of the *new* card pool so the user
+                // doesn't always start with the first N entries from
+                // `jmdict_n4_n1.json` (created-at order). Due cards are
+                // NOT shuffled — SM-2's dueDate-ascending order is the
+                // canonical "what's most overdue" ordering and must
+                // not be disturbed.
                 let pickedIDs = CardScheduler.pickToday(
                     due: due,
-                    newCardIDs: newIDs,
+                    newCardIDs: newIDs.shuffled(),
                     limit: limit,
                     now: nowSnapshot,
                     alreadyReviewedToday: alreadyToday
